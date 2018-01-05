@@ -1,0 +1,40 @@
+* {
+    box-sizing: border-box;
+}
+label {
+    font-weight: normal;
+}
+ul,
+ol,
+li,
+h1, h2, h3, h4, h5, h6 {
+    padding: 0;
+    margin: 0;
+    font-size: inherit;
+}
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+    display: block;
+}
+button {
+    outline: none;
+}
+a {
+    outline: none;
+    text-decoration: none;
+    text-decoration:none;
+    text-decoration: none;
+    transition: background-color .2s ease 0s,color .2s ease 0s,width .2s ease 0s,border-width .2s ease 0s,border-color .2s ease 0s;
+}
+a:hover,
+a:active,
+a:focus {
+    text-decoration: none;
+}
+ol, ul, li {
+    list-style: none;
+}
+body {
+    color: #333;
+    font-size: 14px;
+    font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", 微软雅黑, Arial, sans-serif;
+}
