@@ -1,6 +1,6 @@
 <template>
     <header class="page-header">
-        <ui-appbar title="标题">
+        <ui-appbar title="云设教程">
             <ui-icon-button icon="menu" slot="left"/>
             <ui-flat-button label="expand_more" slot="right"/>
             <ui-icon-button icon="expand_more" slot="right"/>

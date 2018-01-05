@@ -3,6 +3,7 @@ import Router from 'vue-router'
 
 const Home = resolve => require(['@/views/Home'], resolve)
 const About = resolve => require(['@/views/About'], resolve)
+const Html = resolve => require(['@/views/Html'], resolve)
 
 const Error404 = resolve => require(['@/views/error/Error404'], resolve)
 
@@ -24,6 +25,10 @@ let routes = [
         meta: {
             title: '关于'
         }
+    },
+    {
+        path: '/cat/html',
+        component: Html
     },
     {
         path: '/404',
