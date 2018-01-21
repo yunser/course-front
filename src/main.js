@@ -9,16 +9,8 @@ import storage from '@/util/storage'
 // 全部加载
 import YunserUI from 'yunser-ui-vue'
 import 'yunser-ui-vue/dist/yunser-ui.css'
-// 单个组件加载
-// import appBar from 'yunser-components/'
 import './scss/main.scss'
-// import 'yunser-components/styles2/base.scss' // 加载基础的样式
 import ui from './components/index'
-import 'yunser-ui-vue/dist/theme-carbon.css' // 使用 carbon 主题
-// import appBar from 'yunser-components/appBar'
-// import avatar from 'yunser-components/avatar'
-// Vue.component(appBar.name, appBar)
-// Vue.component(avatar.name, avatar)
 
 // 全部加载
 Vue.use(YunserUI)

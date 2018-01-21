@@ -1,60 +1,67 @@
 <template>
-    <div class="page-home">
-        <ui-header></ui-header>
-        <main class="page-body">
-            <div class="container">
-                <h2>HTML/HTML5 教程</h2>
-                <div>不讲解过时的知识</div>
+    <my-page title="HTML">
+        <h2>HTML/HTML5 教程</h2>
+        <div>不讲解过时的知识</div>
 
-                <h3>知识点</h3>
-                <ul>
-                    <li></li>
-                </ul>
+        <h3>知识点</h3>
+        <ul>
+            <li></li>
+        </ul>
 
-                <h3>工具</h3>
-                <ul>
-                    <li></li>
-                </ul>
+        <h3>工具</h3>
+        <ul>
+            <li></li>
+        </ul>
 
-                <h3>测验</h3>
-                <ul>
-                    <li></li>
-                    <div>应该通过 iframe 嵌入的方式</div>
+        <ui-article>
+            <ui-markdown :content="exampleFormCode"></ui-markdown>
+            <!--<ui-demo :code="demoCode">-->
+                <!--<demo></demo>-->
+            <!--</ui-demo>-->
+        </ui-article>
 
-                    <div>开始时间：2018-1-5 17:29:55</div>
-                    <div>结束时间：2018-1-5 17:50:08</div>
-                    <div>已用时间：1 分钟</div>
+        <h3>测验</h3>
+        <ul>
+            <li></li>
+            <div>应该通过 iframe 嵌入的方式</div>
 
-                    请选择产生斜体字的 HTML 标签：
-                    <i>
-                    <italics>
-                    <ii>
+            <div>开始时间：2018-1-5 17:29:55</div>
+            <div>结束时间：2018-1-5 17:50:08</div>
+            <div>已用时间：1 分钟</div>
 
-                        在下列的 HTML 中，哪个可以产生超链接？
-                        <a url="http://www.w3school.com.cn">W3School.com.cn</a>
-                        <a href="http://www.w3school.com.cn">W3School</a>
-                        <a>http://www.w3school.com.cn</a>
-                        <a name="http://www.w3school.com.cn">W3School.com.cn</a>
+            <!--请选择产生斜体字的 HTML 标签：-->
+            <!--<i>-->
+            <!--<italics>-->
+            <!--<ii>-->
 
-                        如何在新窗口打开链接？
-                        <a href="url" new>
-                        <a href="url" target="_blank">
-                        <a href="url" target="new">
+            <!--在下列的 HTML 中，哪个可以产生超链接？-->
+            <!--<a url="http://www.w3school.com.cn">W3School.com.cn</a>-->
+            <!--<a href="http://www.w3school.com.cn">W3School</a>-->
+            <!--<a>http://www.w3school.com.cn</a>-->
+            <!--<a name="http://www.w3school.com.cn">W3School.com.cn</a>-->
+
+            <!--如何在新窗口打开链接？-->
+            <!--<a href="url" new>-->
+            <!--<a href="url" target="_blank">-->
+            <!--<a href="url" target="new">-->
 
 
-                </ul>
+        </ul>
 
-                <router-link to="/about">关于21212127</router-link>
-            </div>
-        </main>
-        <ui-footer></ui-footer>
-    </div>
+        <router-link to="/about">关于21212127</router-link>
+    </my-page>
 </template>
 
 <script>
+    /* eslint-disable */
+    import demoCode from '!raw-loader!./demo.vue'
+    import exampleFormCode from 'raw-loader!./README.md'
+
     export default {
         data () {
             return {
+                exampleFormCode: exampleFormCode,
+                demoCode: demoCode
             }
         }
     }

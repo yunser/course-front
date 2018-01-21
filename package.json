@@ -12,13 +12,15 @@
   },
   "dependencies": {
     "axios": "^0.17.1",
+    "highlight.js": "^9.12.0",
+    "marked": "^0.3.12",
     "module": "^1.2.5",
     "muse-ui": "^2.1.0",
     "qs": "^6.5.1",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1",
     "vue-server-renderer": "^2.5.9",
-    "yunser-ui-vue": "^0.1.6"
+    "yunser-ui-vue": "^0.1.25"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",
@@ -61,10 +63,11 @@
     "vue-loader": "^13.3.0",
     "vue-style-loader": "^3.0.1",
     "vue-template-compiler": "^2.5.2",
-    "webpack": "^3.6.0",
+    "webpack": "3.6.0",
     "webpack-bundle-analyzer": "^2.9.0",
-    "webpack-dev-server": "^2.9.1",
-    "webpack-merge": "^4.1.0"
+    "webpack-dev-server": "2.9.1",
+    "webpack-merge": "^4.1.0",
+    "raw-loader": "0.5.1"
   },
   "engines": {
     "node": ">= 4.0.0",

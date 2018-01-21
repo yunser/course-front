@@ -1,49 +1,43 @@
 <template>
-    <div class="page-home">
-        <ui-header></ui-header>
-        <main class="page-body">
-            <div class="container">
-                云设教程，做最好的教程网站。
-                <div>
-                    <h2>教程</h2>
-                    <router-link to="/cat/html">HTML 教程</router-link>
-                    <router-link to="/cat/css">CSS 教程</router-link>
-                    <router-link to="/cat/javascript">JavaScript 教程</router-link>
+    <my-page title="首页">
+        云设教程，做最好的教程网站。
+        <div>
+            <h2>教程</h2>
+            <router-link to="/cat/html">HTML 教程</router-link>
+            <router-link to="/cat/css">CSS 教程</router-link>
+            <router-link to="/cat/javascript">JavaScript 教程</router-link>
 
+        </div>
+        <div>
+            <h2>前端工程师</h2>
+            <p>1. 基础：HTML、CSS、JavaScript</p>
+            <p>2. 进阶：HTML、CSS</p>
+            <p>2. 进阶：HTML、CSS</p>
+        </div>
+        <div class="media"></div>
+        <div>奖章矢量图：</div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div>http://sc.chinaz.com/shiliang/170528017143.htm</div>
+        <div>http://sc.chinaz.com/shiliang/170613465820.htm</div>
+        <div>http://sc.chinaz.com/shiliang/170403311131.htm</div>
+        <div>http://sc.chinaz.com/shiliang/140727445981.htm</div>
+        <div class="ui-medal">
+            <div class="medal-content">
+                <img class="medal-img" src="/static/img/medal.svg">
+                <div class="number">
+                    <span class="big">1</span>st
                 </div>
-                <div>
-                    <h2>前端工程师</h2>
-                    <p>1. 基础：HTML、CSS、JavaScript</p>
-                    <p>2. 进阶：HTML、CSS</p>
-                    <p>2. 进阶：HTML、CSS</p>
-                </div>
-                <div class="media"></div>
-                <div>奖章矢量图：</div>
-                <div></div>
-                <div></div>
-                <div></div>
-                <div>http://sc.chinaz.com/shiliang/170528017143.htm</div>
-                <div>http://sc.chinaz.com/shiliang/170613465820.htm</div>
-                <div>http://sc.chinaz.com/shiliang/170403311131.htm</div>
-                <div>http://sc.chinaz.com/shiliang/140727445981.htm</div>
-                <div class="ui-medal">
-                    <div class="medal-content">
-                        <img class="medal-img" src="/static/img/medal.svg">
-                        <div class="number">
-                            <span class="big">1</span>st
-                        </div>
-                    </div>
-                    <footer class="medal-footer">
-                        <div class="title">连走三周</div>
-                        <div class="content">连续三周行走12121212</div>
-                    </footer>
-                </div>
-
-                <router-link to="/about">关于21212127</router-link>
             </div>
-        </main>
-        <ui-footer></ui-footer>
-    </div>
+            <footer class="medal-footer">
+                <div class="title">连走三周</div>
+                <div class="content">连续三周行走12121212</div>
+            </footer>
+        </div>
+
+        <router-link to="/about">关于21212127</router-link>
+    </my-page>
 </template>
 
 <script>

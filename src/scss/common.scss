@@ -1,1 +1,92 @@
+@import "var";
+
+$success: #55a532;
+$error: #f44;
+
 // TODO
+.exam-box {
+    padding: 16px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 6px rgba(0,0,0,.117647), 0 1px 4px rgba(0,0,0,.117647);
+    .index {
+        //font-size: 30px;
+        margin-bottom: 16px;
+    }
+    .title {
+        font-size: 30px;
+        margin-bottom: 16px;
+    }
+    .options {
+        .item {
+            padding: 16px;
+            //border: 1px solid #eee;
+            //margin-bottom: 16px;
+            cursor: pointer;
+            &:hover {
+                background-color: #f1f1f1;
+            }
+            &.selected {
+                border: 1px solid $success;
+            }
+        }
+    }
+    .op {
+        .btn {
+            margin-right: 8px;
+        }
+    }
+}
+.simple-answer-card {
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 6px rgba(0,0,0,.117647), 0 1px 4px rgba(0,0,0,.117647);
+    .card-title {
+        font-size: 18px;
+        margin-bottom: 16px;
+    }
+    .answer-list {
+        @include clearfix;
+        .item {
+            float: left;
+            margin-right: 16px;
+            margin-bottom: 16px;
+        }
+        .undo {
+            //background-color: #f00;
+        }
+        .finish {
+            color: #fff;
+            background-color: $success;
+        }
+        .current {
+            border: 1px solid #000;
+        }
+    }
+    .round-btn {
+        width: 48px;
+        height: 48px;
+        min-width: inherit;
+        border-radius: 50%;
+    }
+}
+.answer-card {
+    padding: 16px;
+    box-shadow: 0 1px 6px rgba(0,0,0,.117647), 0 1px 4px rgba(0,0,0,.117647);
+    .card-title {
+        font-size: 18px;
+        margin-bottom: 16px;
+    }
+    .answer-list {
+        @include clearfix;
+        .item {
+            margin-bottom: 16px;
+            border: 1px solid #eee;
+            &.success {
+                border: 1px solid $success;
+            }
+            &.error {
+                border: 1px solid $error;
+            }
+        }
+    }
+}
