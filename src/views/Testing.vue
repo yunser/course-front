@@ -8,7 +8,7 @@
             <ul class="answer-list">
                 <li class="item" v-for="(q, index) in questions">
                     <ui-raised-button class="round-btn unknown"
-                                      :class="{finish: isDown(q), current: index === questionIndex}"
+                                      :class="{finish: isDone(q), current: index === questionIndex}"
                                       :label="'' + (index + 1)"
                                       @click="selectIndex(index)" />
                 </li>
@@ -17,10 +17,10 @@
         <div class="exam-box" v-if="state === 'start'">
             <!--<div class="index">第 {{ questionIndex + 1 }} 题</div>-->
             <h2>
-                <span v-if="question.type === 'single'">单选题：</span>
-                <span v-if="question.type === 'multiple'">多选题：</span>
+                <span>{{ type }}</span>
                 <span class="title">{{ question.content }}</span>
             </h2>
+            <input v-model="question.userAnswer" v-if="question.type === 'aq'">
             <ul class="options">
                 <li class="item" v-for="(option, index) in question.options"
                     :key="option"
@@ -49,6 +49,7 @@
                             {{ numberToLetter(answer) }}. {{ q.options[answer] }}
                         </div>
                     </h3>
+                    <h3 v-if="q.type === 'aq'">答案：{{ q.answer }}</h3>
                     <div v-if="q.userAnswer || q.userAnswer === 0">
                         <div v-if="q.type === 'single'">你的回答：{{ numberToLetter(q.userAnswer) }}. {{ q.options[q.userAnswer] }}</div>
                         <div v-if="q.type === 'multiple'">
@@ -56,6 +57,9 @@
                             <div v-for="answer in q.userAnswer">
                                 {{ numberToLetter(answer) }}. {{ q.options[answer] }}
                             </div>
+                        </div>
+                        <div v-if="q.type === 'aq'">
+                            你的回答：{{ q.userAnswer }}
                         </div>
                     </div>
                     <div v-else>你还没有回答</div>
@@ -117,6 +121,18 @@
                 questions: [
                     {
                         id: '1',
+                        type: 'aq',
+                        content: '1+2等于几？',
+                        answer: '3'
+                    },
+//                    {
+//                        id: '1',
+//                        type: 'fill',
+//                        content: '_?_秋月何时了，_?_往事知多少',
+//                        answer: ['春花', '秋月']
+//                    },
+                    {
+                        id: '1',
                         type: 'multiple',
                         content: '哪些是对的',
                         options: ['1+1=2', '1+2=3', '1+1=3', '1+2=2'],
@@ -150,10 +166,22 @@
             }
         },
         computed: {
+            type() {
+                let types = {
+                    single: '单选题',
+                    multiple: '多选题',
+                    fill: '填空题',
+                    aq: '问答题'
+                }
+                return types[this.question.type]
+            },
             score() {
                 let successCount = 0
                 for (let question of this.questions) {
-                    if (question.type === 'single') {
+                    if (!question.userAnswer) {
+                        continue
+                    }
+                    if (question.type === 'single' || question.type === 'aq') {
                         if (question.userAnswer === question.answer) {
                             successCount++
                         }
@@ -196,8 +224,12 @@
                     }
                     return false
                 }
+                return false
             },
             isSuccess(question) {
+                if (!question.userAnswer) {
+                    return false
+                }
                 if (question.type === 'single') {
                     return question.userAnswer === question.answer
                 }
@@ -213,14 +245,22 @@
                     }
                     return true
                 }
+                if (question.type === 'aq') {
+                    return question.userAnswer === question.answer
+                }
+                return false
             },
-            isDown(question) {
+            isDone(question) {
                 if (question.type === 'single') {
                     return question.userAnswer || question.userAnswer === 0
                 }
                 if (question.type === 'multiple') {
                     return question.userAnswer && question.userAnswer.length
                 }
+                if (question.type === 'aq') {
+                    return question.userAnswer
+                }
+                return false
             },
             doOption(index) {
                 if (this.question.type === 'single') {
