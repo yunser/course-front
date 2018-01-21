@@ -8,7 +8,7 @@
             <ul class="answer-list">
                 <li class="item" v-for="(q, index) in questions">
                     <ui-raised-button class="round-btn unknown"
-                                      :class="{finish: q.userAnswer || q.userAnswer === 0, current: index === questionIndex}"
+                                      :class="{finish: isDown(q), current: index === questionIndex}"
                                       :label="'' + (index + 1)"
                                       @click="selectIndex(index)" />
                 </li>
@@ -16,11 +16,15 @@
         </div>
         <div class="exam-box" v-if="state === 'start'">
             <!--<div class="index">第 {{ questionIndex + 1 }} 题</div>-->
-            <h2 class="title">{{ question.content }}</h2>
+            <h2>
+                <span v-if="question.type === 'single'">单选题：</span>
+                <span v-if="question.type === 'multiple'">多选题：</span>
+                <span class="title">{{ question.content }}</span>
+            </h2>
             <ul class="options">
                 <li class="item" v-for="(option, index) in question.options"
                     :key="option"
-                    :class="{selected: question.userAnswer === index}"
+                    :class="{selected: isSelected(question, index)}"
                     @click="doOption(index)">{{ option }}</li>
             </ul>
             <div class="op">
@@ -35,12 +39,24 @@
             <div>分数：{{ score }}</div>
             <ul class="answer-list">
                 <li class="item"
-                    :class="{success: q.userAnswer === q.answer, error: q.userAnswer !== q.answer}"
+                    :class="{success: isSuccess(q), error: !isSuccess(q)}"
                     v-for="(q, index) in questions">
                     <h3>问题：{{ q.content }}</h3>
-                    <h3>答案：{{ numberToLetter(q.answer) }}. {{ q.options[q.answer] }}</h3>
+                    <h3 v-if="q.type === 'single'">答案：{{ numberToLetter(q.answer) }}. {{ q.options[q.answer] }}</h3>
+                    <h3 v-if="q.type === 'multiple'">
+                        答案：
+                        <div v-for="answer in q.answer">
+                            {{ numberToLetter(answer) }}. {{ q.options[answer] }}
+                        </div>
+                    </h3>
                     <div v-if="q.userAnswer || q.userAnswer === 0">
-                        你的回答：{{ numberToLetter(q.userAnswer) }}. {{ q.options[q.userAnswer] }}
+                        <div v-if="q.type === 'single'">你的回答：{{ numberToLetter(q.userAnswer) }}. {{ q.options[q.userAnswer] }}</div>
+                        <div v-if="q.type === 'multiple'">
+                            你的回答：
+                            <div v-for="answer in q.userAnswer">
+                                {{ numberToLetter(answer) }}. {{ q.options[answer] }}
+                            </div>
+                        </div>
                     </div>
                     <div v-else>你还没有回答</div>
                 </li>
@@ -82,6 +98,16 @@
     import demoCode from '!raw-loader!./demo.vue'
     import exampleFormCode from 'raw-loader!./README.md'
 
+    Array.prototype.contains = function (obj) {
+        var i = this.length
+        while (i--) {
+            if (this[i] === obj) {
+                return true
+            }
+        }
+        return false
+    }
+
     export default {
         data () {
             return {
@@ -91,10 +117,18 @@
                 questions: [
                     {
                         id: '1',
+                        type: 'multiple',
+                        content: '哪些是对的',
+                        options: ['1+1=2', '1+2=3', '1+1=3', '1+2=2'],
+                        answer: [0, 1],
+                        userAnswer: null
+                    },
+                    {
+                        id: '1',
                         type: 'single',
                         content: '1+1=?',
                         options: ['1', '2', '3', '4'],
-                        answer: 1,
+                        answer: 1
                     },
                     {
                         id: '1',
@@ -119,8 +153,24 @@
             score() {
                 let successCount = 0
                 for (let question of this.questions) {
-                    if (question.userAnswer === question.answer) {
-                        successCount++
+                    if (question.type === 'single') {
+                        if (question.userAnswer === question.answer) {
+                            successCount++
+                        }
+                    } else if (question.type === 'multiple') {
+                        if (question.answer.length !== question.userAnswer.length) {
+                            continue
+                        }
+                        let isRight = true
+                        for (let i = 0; i < question.answer.length; i++) {
+                            if (question.answer[i] !== question.userAnswer[i]) {
+                                isRight = false
+                                break
+                            }
+                        }
+                        if (isRight) {
+                            successCount++
+                        }
                     }
                 }
                 return parseInt(100 * successCount / this.questions.length)
@@ -132,13 +182,89 @@
             this.start()
         },
         methods: {
+            isSelected(question, index) {
+                if (question.type === 'single') {
+                    return question.userAnswer === index
+                } else if (question.type === 'multiple') {
+                    if (!question.userAnswer) {
+                        return false
+                    }
+                    for (let answer of question.userAnswer) {
+                        if (answer === index) {
+                            return true
+                        }
+                    }
+                    return false
+                }
+            },
+            isSuccess(question) {
+                if (question.type === 'single') {
+                    return question.userAnswer === question.answer
+                }
+                if (question.type === 'multiple') {
+                    // 少选多选不给分
+                    if (question.answer.length !== question.userAnswer.length) {
+                        return false
+                    }
+                    for (let i = 0; i < question.answer.length; i++) {
+                        if (question.answer[i] !== question.userAnswer[i]) {
+                            return false
+                        }
+                    }
+                    return true
+                }
+            },
+            isDown(question) {
+                if (question.type === 'single') {
+                    return question.userAnswer || question.userAnswer === 0
+                }
+                if (question.type === 'multiple') {
+                    return question.userAnswer && question.userAnswer.length
+                }
+            },
             doOption(index) {
-                this.questions[this.questionIndex].userAnswer = index
-                if (this.questionIndex === this.questions.length - 1) {
-                    this.questionIndex = 0 // 遮住某个 bug
-//                    this.state = 'end'
-                } else {
-                    this._nextQuestion()
+                if (this.question.type === 'single') {
+                    this.questions[this.questionIndex].userAnswer = index
+                    // 检查后面是否有未完成的题目
+                    for (let i = this.questionIndex + 1; i < this.questions.length; i++) {
+                        if (!this.questions[i].userAnswer) {
+                            this.questionIndex = i
+                            this.question = this.questions[this.questionIndex]
+                            return
+                        }
+                    }
+                    // 检查前面是否有未完成的题目
+                    for (let i = 0; i < this.questionIndex; i++) {
+                        if (!this.questions[i].userAnswer) {
+                            this.questionIndex = i
+                            this.question = this.questions[this.questionIndex]
+                            return
+                        }
+                    }
+                    // 遮住某个 bug
+                    this.questionIndex++
+                    if (this.questionIndex > this.questions.length - 1) {
+                        this.questionIndex = 0
+                    }
+                    this.question = this.questions[this.questionIndex]
+                } else if (this.question.type === 'multiple') {
+                    let userAnswer = this.questions[this.questionIndex].userAnswer
+                    if (!userAnswer) {
+                        userAnswer = []
+                    }
+                    if (userAnswer.contains(index)) {
+                        for (let i = 0; i < userAnswer.length; i++) {
+                            if (userAnswer[i] === index) {
+                                userAnswer.splice(i, 1)
+                                return
+                            }
+                        }
+                    }
+
+                    userAnswer.push(index)
+                    // 答案排序
+                    userAnswer = userAnswer.sort()
+                    this.questions[this.questionIndex].userAnswer = userAnswer
                 }
             },
             prevQuestion() {

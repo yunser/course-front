@@ -21,7 +21,9 @@ $error: #f44;
             padding: 16px;
             //border: 1px solid #eee;
             //margin-bottom: 16px;
+            margin-bottom: 4px;
             cursor: pointer;
+            border: 1px solid #f1f1f1;
             &:hover {
                 background-color: #f1f1f1;
             }
