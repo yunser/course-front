@@ -11,6 +11,7 @@ import YunserUI from 'yunser-ui-vue'
 import 'yunser-ui-vue/dist/yunser-ui.css'
 import './scss/main.scss'
 import ui from './components/index'
+import 'nprogress/nprogress.css'
 
 // 全部加载
 Vue.use(YunserUI)

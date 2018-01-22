@@ -18,9 +18,23 @@
             <!--<div class="index">第 {{ questionIndex + 1 }} 题</div>-->
             <h2>
                 <span>{{ type }}</span>
-                <span class="title">{{ question.content }}</span>
+                <span class="title" v-if="question.type !== 'fill'">{{ question.content }}</span>
             </h2>
             <input v-model="question.userAnswer" v-if="question.type === 'aq'">
+            <div v-if="question.type === 'fill'">
+                <span v-for="(content, index) in question._content">
+                    <input v-model="question['fill' + content.index]" v-if="content.type === 'blank'"/>
+                    <span v-else>{{ content.text }}</span>
+                </span>
+            </div>
+            <ul class="options" v-if="question.type === 'judgment'">
+                <li class="item"
+                    :class="{selected: isSelected(question, true)}"
+                    @click="doOption(true)">正确</li>
+                <li class="item"
+                    :class="{selected: isSelected(question, false)}"
+                    @click="doOption(false)">错误</li>
+            </ul>
             <ul class="options">
                 <li class="item" v-for="(option, index) in question.options"
                     :key="option"
@@ -41,7 +55,8 @@
                 <li class="item"
                     :class="{success: isSuccess(q), error: !isSuccess(q)}"
                     v-for="(q, index) in questions">
-                    <h3>问题：{{ q.content }}</h3>
+                    <h3 v-if="q.type !== 'fill'">问题：{{ q.content }}</h3>
+                    <h3 v-if="q.type === 'fill'">问题：{{ getFillContent(q.content) }}</h3>
                     <h3 v-if="q.type === 'single'">答案：{{ numberToLetter(q.answer) }}. {{ q.options[q.answer] }}</h3>
                     <h3 v-if="q.type === 'multiple'">
                         答案：
@@ -50,19 +65,40 @@
                         </div>
                     </h3>
                     <h3 v-if="q.type === 'aq'">答案：{{ q.answer }}</h3>
-                    <div v-if="q.userAnswer || q.userAnswer === 0">
-                        <div v-if="q.type === 'single'">你的回答：{{ numberToLetter(q.userAnswer) }}. {{ q.options[q.userAnswer] }}</div>
-                        <div v-if="q.type === 'multiple'">
-                            你的回答：
-                            <div v-for="answer in q.userAnswer">
-                                {{ numberToLetter(answer) }}. {{ q.options[answer] }}
+                    <h3 v-if="q.type === 'fill'">
+                        答案：{{ q.answer.join(', ') }}
+                        <!--<div v-for="answer in q.answer">-->
+                            <!--{{ answer }}-->
+                        <!--</div>-->
+                    </h3>
+                    <h3 v-if="q.type === 'judgment'">
+                        答案：{{ boolToText(q.answer) }}
+                    </h3>
+
+                    <div v-if="q.type === 'single' || q.type === 'multiple' || q.type === 'aq'">
+                        <div v-if="q.userAnswer || q.userAnswer === 0">
+                            <div v-if="q.type === 'single'">你的回答：{{ numberToLetter(q.userAnswer) }}. {{ q.options[q.userAnswer] }}</div>
+                            <div v-if="q.type === 'multiple'">
+                                你的回答：
+                                <div v-for="answer in q.userAnswer">
+                                    {{ numberToLetter(answer) }}. {{ q.options[answer] }}
+                                </div>
+                            </div>
+                            <div v-if="q.type === 'aq'">
+                                你的回答：{{ q.userAnswer }}
                             </div>
                         </div>
-                        <div v-if="q.type === 'aq'">
-                            你的回答：{{ q.userAnswer }}
-                        </div>
+                        <div v-else>你还没有回答</div>
                     </div>
-                    <div v-else>你还没有回答</div>
+                    <div v-if="q.type === 'fill'">
+                        你的回答：{{ getFillUserAnswer(q).join(', ') }}
+                    </div>
+                    <div v-if="q.type === 'judgment'">
+                        <div v-if="q.userAnswer === true || q.userAnswer === false">
+                            你的回答：{{ boolToText(q.userAnswer) }}
+                        </div>
+                        <div v-else>你还没有回答</div>
+                    </div>
                 </li>
             </ul>
             <ui-raised-button class="btn" label="我不服" primary @click="restart"/>
@@ -121,16 +157,25 @@
                 questions: [
                     {
                         id: '1',
+                        type: 'judgment',
+                        content: '所有的苹果都是水果',
+                        answer: true,
+                        userAnswer: null
+                    },
+                    {
+                        id: '1',
+                        type: 'fill',
+                        content: '123秋月何时了，123知多少',
+                        answer: ['春花', '往事'],
+                        userAnswer: null
+                    },
+                    {
+                        id: '1',
                         type: 'aq',
                         content: '1+2等于几？',
-                        answer: '3'
+                        answer: '3',
+                        userAnswer: null
                     },
-//                    {
-//                        id: '1',
-//                        type: 'fill',
-//                        content: '_?_秋月何时了，_?_往事知多少',
-//                        answer: ['春花', '秋月']
-//                    },
                     {
                         id: '1',
                         type: 'multiple',
@@ -144,21 +189,8 @@
                         type: 'single',
                         content: '1+1=?',
                         options: ['1', '2', '3', '4'],
-                        answer: 1
-                    },
-                    {
-                        id: '1',
-                        type: 'single',
-                        content: '3+1=?',
-                        options: ['1', '2', '3', '4'],
-                        answer: 3,
-                    },
-                    {
-                        id: '1',
-                        type: 'single',
-                        content: '3+5=?',
-                        options: ['1', '2', '8', '4'],
-                        answer: 2,
+                        answer: 1,
+                        userAnswer: null
                     }
                 ],
                 question: {},
@@ -178,7 +210,7 @@
             score() {
                 let successCount = 0
                 for (let question of this.questions) {
-                    if (!question.userAnswer) {
+                    if (question.type !== 'fill' && !question.userAnswer) {
                         continue
                     }
                     if (question.type === 'single' || question.type === 'aq') {
@@ -199,6 +231,15 @@
                         if (isRight) {
                             successCount++
                         }
+                    } else if (question.type === 'fill') {
+                        if (this.isSuccess(question)) {
+                            successCount++
+                        }
+                        console.log('判断', this.isSuccess(question))
+                    } else if (question.type === 'judgment') {
+                        if (question.userAnswer === question.answer) {
+                            successCount++
+                        }
                     }
                 }
                 return parseInt(100 * successCount / this.questions.length)
@@ -206,10 +247,53 @@
         },
         mounted() {
             this.question = this.questions[this.questionIndex]
+            this.init()
             // 测试
             this.start()
         },
         methods: {
+            init() {
+                for (let question of this.questions) {
+                    if (question.type === 'fill') {
+                        let content = question.content.replace(/123/g, '|?|_?_|?|')
+                        let arr = content.split('|?|')
+                        let result = []
+                        let blankIndex = 0
+                        for (let item of arr) {
+                            if (item === '_?_') {
+                                result.push({
+                                    type: 'blank',
+                                    index: blankIndex
+                                })
+                                blankIndex++
+                            } else {
+                                result.push({
+                                    type: 'text',
+                                    text: item
+                                })
+                            }
+                        }
+                        question._content = result
+                    }
+                }
+            },
+            boolToText(bool) {
+                return bool ? '正确' : '错误'
+            },
+            getFillContent(content) {
+                return content.replace(/123/g, '___')
+            },
+            getFillUserAnswer(question) {
+                let answer = []
+                for (let i = 0; i < question.answer.length; i++) {
+                    if (question['fill' + i]) {
+                        answer.push(question['fill' + i])
+                    } else {
+                        answer.push(null)
+                    }
+                }
+                return answer // .join(', ')
+            },
             isSelected(question, index) {
                 if (question.type === 'single') {
                     return question.userAnswer === index
@@ -223,11 +307,13 @@
                         }
                     }
                     return false
+                } else if (question.type === 'judgment') {
+                    return question.userAnswer === index
                 }
                 return false
             },
             isSuccess(question) {
-                if (!question.userAnswer) {
+                if (question.type !== 'fill' && !question.userAnswer) {
                     return false
                 }
                 if (question.type === 'single') {
@@ -248,6 +334,21 @@
                 if (question.type === 'aq') {
                     return question.userAnswer === question.answer
                 }
+                if (question.type === 'fill') {
+                    let userAnswer = this.getFillUserAnswer(question)
+                    if (question.answer.length !== userAnswer.length) {
+                        return false
+                    }
+                    for (let i = 0; i < question.answer.length; i++) {
+                        if (question.answer[i] !== userAnswer[i]) {
+                            return false
+                        }
+                    }
+                    return true
+                }
+                if (question.type === 'judgment') {
+                    return question.userAnswer === question.answer
+                }
                 return false
             },
             isDone(question) {
@@ -260,33 +361,45 @@
                 if (question.type === 'aq') {
                     return question.userAnswer
                 }
+                if (question.type === 'fill') {
+                    let answer = this.getFillUserAnswer(question)
+                    for (let item of answer) {
+                        if (!item) {
+                            return false
+                        }
+                    }
+                    return true
+                }
+                if (question.type === 'judgment') {
+                    return question.userAnswer === true || question.userAnswer === false
+                }
                 return false
             },
             doOption(index) {
                 if (this.question.type === 'single') {
                     this.questions[this.questionIndex].userAnswer = index
-                    // 检查后面是否有未完成的题目
-                    for (let i = this.questionIndex + 1; i < this.questions.length; i++) {
-                        if (!this.questions[i].userAnswer) {
-                            this.questionIndex = i
-                            this.question = this.questions[this.questionIndex]
-                            return
-                        }
-                    }
-                    // 检查前面是否有未完成的题目
-                    for (let i = 0; i < this.questionIndex; i++) {
-                        if (!this.questions[i].userAnswer) {
-                            this.questionIndex = i
-                            this.question = this.questions[this.questionIndex]
-                            return
-                        }
-                    }
-                    // 遮住某个 bug
-                    this.questionIndex++
-                    if (this.questionIndex > this.questions.length - 1) {
-                        this.questionIndex = 0
-                    }
-                    this.question = this.questions[this.questionIndex]
+//                    // 检查后面是否有未完成的题目
+//                    for (let i = this.questionIndex + 1; i < this.questions.length; i++) {
+//                        if (!this.questions[i].userAnswer) {
+//                            this.questionIndex = i
+//                            this.question = this.questions[this.questionIndex]
+//                            return
+//                        }
+//                    }
+//                    // 检查前面是否有未完成的题目
+//                    for (let i = 0; i < this.questionIndex; i++) {
+//                        if (!this.questions[i].userAnswer) {
+//                            this.questionIndex = i
+//                            this.question = this.questions[this.questionIndex]
+//                            return
+//                        }
+//                    }
+//                    // 遮住某个 bug
+//                    this.questionIndex++
+//                    if (this.questionIndex > this.questions.length - 1) {
+//                        this.questionIndex = 0
+//                    }
+//                    this.question = this.questions[this.questionIndex]
                 } else if (this.question.type === 'multiple') {
                     let userAnswer = this.questions[this.questionIndex].userAnswer
                     if (!userAnswer) {
@@ -305,6 +418,8 @@
                     // 答案排序
                     userAnswer = userAnswer.sort()
                     this.questions[this.questionIndex].userAnswer = userAnswer
+                } else if (this.question.type === 'judgment') {
+                    this.questions[this.questionIndex].userAnswer = index
                 }
             },
             prevQuestion() {
