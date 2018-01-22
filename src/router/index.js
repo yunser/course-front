@@ -6,6 +6,7 @@ const Home = resolve => require(['@/views/Home'], resolve)
 const About = resolve => require(['@/views/About'], resolve)
 const Html = resolve => require(['@/views/Html'], resolve)
 const Testing = resolve => require(['@/views/Testing'], resolve)
+const Make = resolve => require(['@/views/Make'], resolve)
 
 const Error404 = resolve => require(['@/views/error/Error404'], resolve)
 
@@ -27,6 +28,10 @@ let routes = [
     {
         path: '/testing',
         component: Testing
+    },
+    {
+        path: '/make',
+        component: Make
     },
     {
         path: '*',

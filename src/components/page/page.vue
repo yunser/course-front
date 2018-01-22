@@ -13,6 +13,9 @@
                 <ui-list-item title="测试" to="/testing">
                     <ui-icon value="star" slot="left" />
                 </ui-list-item>
+                <ui-list-item title="组卷" to="/make">
+                    <ui-icon value="star" slot="left" />
+                </ui-list-item>
                 <ui-divider />
                 <ui-list-item title="关于" to="/about">
                     <ui-icon value="info" slot="left" />

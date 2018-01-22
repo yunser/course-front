@@ -35,8 +35,6 @@
                 <div class="content">连续三周行走12121212</div>
             </footer>
         </div>
-
-        <router-link to="/about">关于21212127</router-link>
     </my-page>
 </template>
 

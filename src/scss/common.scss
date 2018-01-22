@@ -12,9 +12,22 @@ $error: #f44;
         //font-size: 30px;
         margin-bottom: 16px;
     }
+    .type {
+        margin-bottom: 16px;
+    }
     .title {
         font-size: 30px;
         margin-bottom: 16px;
+    }
+    .input {
+        margin-bottom: 16px;
+    }
+    .fill-input {
+        margin-right: 8px;
+        .mu-text-field-input {
+            padding-left: 8px;
+            text-align: center;
+        }
     }
     .options {
         .item {
@@ -90,5 +103,14 @@ $error: #f44;
                 border: 1px solid $error;
             }
         }
+    }
+}
+.meta-list {
+    margin-bottom: 16px;
+    color: #999;
+    @include clearfix;
+    .item {
+        float: left;
+        margin-right: 16px;
     }
 }

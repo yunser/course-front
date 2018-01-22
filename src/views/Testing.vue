@@ -3,6 +3,11 @@
         <div>
             <ui-raised-button label="开始测试" primary @click="start" v-if="state === ''" />
         </div>
+        <ul class="meta-list" v-if="state === 'start' || state === 'end'">
+            <li class="item">开始时间：{{ startTimeStr }}</li>
+            <li class="item">用时：{{ minute }} 分钟</li>
+            <!--<li><div>结束时间：2018-1-5 17:50:08</div></li>-->
+        </ul>
         <div class="simple-answer-card" v-if="state === 'start'">
             <h2 class="card-title">答题卡</h2>
             <ul class="answer-list">
@@ -16,14 +21,17 @@
         </div>
         <div class="exam-box" v-if="state === 'start'">
             <!--<div class="index">第 {{ questionIndex + 1 }} 题</div>-->
-            <h2>
-                <span>{{ type }}</span>
-                <span class="title" v-if="question.type !== 'fill'">{{ question.content }}</span>
-            </h2>
-            <input v-model="question.userAnswer" v-if="question.type === 'aq'">
+            <ui-badge class="type" :content="type" />
+            <!--<h2 class="type">{{ type }}</h2>-->
+            <h3 class="title" v-if="question.type !== 'fill'">{{ question.content }}</h3>
+            <ui-text-field class="input" v-model="question.userAnswer" v-if="question.type === 'aq'" />
             <div v-if="question.type === 'fill'">
                 <span v-for="(content, index) in question._content">
-                    <input v-model="question['fill' + content.index]" v-if="content.type === 'blank'"/>
+                    <ui-text-field class="fill-input"
+                                   :style="{width: (content.length * 40) + 'px'}"
+                                   v-model="question['fill' + content.index]"
+                                   v-if="content.type === 'blank'" />
+                    <!--<input/>-->
                     <span v-else>{{ content.text }}</span>
                 </span>
             </div>
@@ -44,7 +52,8 @@
             <div class="op">
                 <ui-raised-button class="btn" label="上一题" @click="prevQuestion" :disabled="questionIndex === 0" />
                 <ui-raised-button class="btn" label="下一题" primary @click="nextQuestion" :disabled="questionIndex === questions.length - 1" />
-                <ui-raised-button class="btn" label="查看答案" @click="viewAnswer" :disabled="false" />
+                <!--<ui-raised-button class="btn" label="查看答案" @click="viewAnswer" :disabled="false" />-->
+                <ui-raised-button class="btn" label="交卷" @click="viewAnswer" :disabled="false" />
             </div>
         </div>
 
@@ -105,12 +114,8 @@
         </div>
 
         <ul>
-            <li></li>
-            <div>应该通过 iframe 嵌入的方式</div>
 
-            <div>开始时间：2018-1-5 17:29:55</div>
-            <div>结束时间：2018-1-5 17:50:08</div>
-            <div>已用时间：1 分钟</div>
+
 
             <!--请选择产生斜体字的 HTML 标签：-->
             <!--<i>-->
@@ -137,7 +142,8 @@
     /* eslint-disable */
     import demoCode from '!raw-loader!./demo.vue'
     import exampleFormCode from 'raw-loader!./README.md'
-
+    import {format} from '@/util/time'
+    const FILL = '___'
     Array.prototype.contains = function (obj) {
         var i = this.length
         while (i--) {
@@ -165,8 +171,8 @@
                     {
                         id: '1',
                         type: 'fill',
-                        content: '123秋月何时了，123知多少',
-                        answer: ['春花', '往事'],
+                        content: '___秋月何时了，往事___',
+                        answer: ['春花', '知多少'],
                         userAnswer: null
                     },
                     {
@@ -194,7 +200,10 @@
                     }
                 ],
                 question: {},
-                state: '' // 'start', 'end'
+                state: '', // 'start', 'end',
+                startTime: null,
+                endTime: null,
+                minute: 0
             }
         },
         computed: {
@@ -203,7 +212,8 @@
                     single: '单选题',
                     multiple: '多选题',
                     fill: '填空题',
-                    aq: '问答题'
+                    aq: '问答题',
+                    judgment: '判断题'
                 }
                 return types[this.question.type]
             },
@@ -243,6 +253,9 @@
                     }
                 }
                 return parseInt(100 * successCount / this.questions.length)
+            },
+            startTimeStr() {
+                return format(new Date(this.startTime), 'hh:mm')
             }
         },
         mounted() {
@@ -251,19 +264,23 @@
             // 测试
             this.start()
         },
+        destroyed() {
+            clearInterval(this.timer)
+        },
         methods: {
             init() {
                 for (let question of this.questions) {
                     if (question.type === 'fill') {
-                        let content = question.content.replace(/123/g, '|?|_?_|?|')
+                        let content = question.content.replace(new RegExp(FILL, 'g'), '|?|' + FILL + '|?|')
                         let arr = content.split('|?|')
                         let result = []
                         let blankIndex = 0
                         for (let item of arr) {
-                            if (item === '_?_') {
+                            if (item === FILL) {
                                 result.push({
                                     type: 'blank',
-                                    index: blankIndex
+                                    index: blankIndex,
+                                    length: question.answer[blankIndex].length
                                 })
                                 blankIndex++
                             } else {
@@ -281,7 +298,7 @@
                 return bool ? '正确' : '错误'
             },
             getFillContent(content) {
-                return content.replace(/123/g, '___')
+                return content.replace(new RegExp(FILL, 'g'), '___')
             },
             getFillUserAnswer(question) {
                 let answer = []
@@ -426,10 +443,6 @@
                 this.questionIndex--
                 this.question = this.questions[this.questionIndex]
             },
-            _prevQuestion() {
-                this.questionIndex--
-                this.question = this.questions[this.questionIndex]
-            },
             selectIndex(index) {
                 this.questionIndex = index
                 this.question = this.questions[this.questionIndex]
@@ -438,12 +451,14 @@
                 this.questionIndex++
                 this.question = this.questions[this.questionIndex]
             },
-            _nextQuestion() {
-                this.questionIndex++
-                this.question = this.questions[this.questionIndex]
-            },
             start() {
                 this.state = 'start'
+                this.startTime = new Date()
+                this.timer = setInterval(this.updateTime, 60 * 1000)
+            },
+            updateTime() {
+                let time = (new Date().getTime() - this.startTime.getTime()) / 1000 / 60
+                this.minute = parseInt(time)
             },
             restart() {
                 // 清空回答
@@ -451,10 +466,13 @@
                     question.userAnswer = null
                 }
                 this.questionIndex = 0
-                this.state = 'start'
+                this.start()
             },
             viewAnswer() {
                 this.state = 'end'
+                this.endTime = new Date()
+                this.updateTime()
+                clearInterval(this.timer)
             },
             numberToLetter(number) {
                 let arr = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'

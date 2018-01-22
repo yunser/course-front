@@ -1,13 +1,12 @@
 <template>
     <my-page title="HTML">
         <h2>HTML/HTML5 教程</h2>
-        <div>不讲解过时的知识</div>
 
         <h3>知识点</h3>
         <ul>
             <li></li>
         </ul>
-
+        <div>应该通过 iframe 嵌入的方式</div>
         <h3>工具</h3>
         <ul>
             <li></li>
@@ -20,35 +19,6 @@
             <!--</ui-demo>-->
         </ui-article>
 
-        <h3>测验</h3>
-        <ul>
-            <li></li>
-            <div>应该通过 iframe 嵌入的方式</div>
-
-            <div>开始时间：2018-1-5 17:29:55</div>
-            <div>结束时间：2018-1-5 17:50:08</div>
-            <div>已用时间：1 分钟</div>
-
-            <!--请选择产生斜体字的 HTML 标签：-->
-            <!--<i>-->
-            <!--<italics>-->
-            <!--<ii>-->
-
-            <!--在下列的 HTML 中，哪个可以产生超链接？-->
-            <!--<a url="http://www.w3school.com.cn">W3School.com.cn</a>-->
-            <!--<a href="http://www.w3school.com.cn">W3School</a>-->
-            <!--<a>http://www.w3school.com.cn</a>-->
-            <!--<a name="http://www.w3school.com.cn">W3School.com.cn</a>-->
-
-            <!--如何在新窗口打开链接？-->
-            <!--<a href="url" new>-->
-            <!--<a href="url" target="_blank">-->
-            <!--<a href="url" target="new">-->
-
-
-        </ul>
-
-        <router-link to="/about">关于21212127</router-link>
     </my-page>
 </template>
 
