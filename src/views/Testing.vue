@@ -161,6 +161,15 @@
                 demoCode: demoCode,
                 questionIndex: 0,
                 questions: [
+//                    {
+//                        id: '1',
+//                        type: 'join',
+//                        content: '四大名著连一连',
+//                        leftItems: ['《水浒传》', '《西游记》', '《三国演义》', '《红楼梦》'],
+//                        rightItems: ['罗贯中', '施耐庵', '曹雪芹', '吴承恩'],
+//                        answer: [[0, 1], [1, 3], [2, 0], [4, 2]],
+//                        userAnswer: null
+//                    },
                     {
                         id: '1',
                         type: 'judgment',
@@ -213,7 +222,9 @@
                     multiple: '多选题',
                     fill: '填空题',
                     aq: '问答题',
-                    judgment: '判断题'
+                    judgment: '判断题',
+                    join: '连线题',
+                    code: '编程题' // Attachment
                 }
                 return types[this.question.type]
             },
