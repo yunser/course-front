@@ -6,6 +6,7 @@
             <div v-if="!question">
                 <ui-raised-button class="btn" label="添加判断题" @click="addJudgment"/>
                 <ui-raised-button class="btn" label="添加单选题" @click="addSingle"/>
+                <ui-raised-button class="btn" label="添加多选题" @click="addMutiple"/>
             </div>
             <div v-if="question">
                 <div v-if="question.type === 'judgment'">
@@ -16,7 +17,7 @@
                         <ui-radio class="demo-radio" label="错误" name="group" :nativeValue="false" v-model="question.answer"/> <br/>
                     </div>
                 </div>
-                <div v-if="question.type === 'single'">
+                <div v-if="question.type === 'single' || question.type === 'multiple'">
                     <ui-badge class="type" :content="type" />
                     <ui-text-field class="input" v-model="question.content" hintText="内容" />
                     <ul class="option-list">
@@ -29,7 +30,8 @@
                             <ui-icon-button icon="delete" @click="removeOption(index)"/>
                             <span class="index">{{ numberToLetter(index) }}</span>
                             <ui-text-field class="input" v-model="options[index]" hintText="内容" />
-                            <span v-if="index === question.answer">答案</span>
+                            <span v-if="question.type === 'single' && isAnswer(index)">答案</span>
+                            <span v-if="question.type === 'multiple' && isAnswer(index)" @click="setAnswer(index)">答案（取消答案）</span>
                             <span v-else @click="setAnswer(index)">设为答案</span>
                         </li>
                         <li class="item">
@@ -54,6 +56,21 @@
 </template>
 
 <script>
+    // eslint-disable-next-line
+    Array.prototype.contains = function (obj) {
+        var i = this.length
+        while (i--) {
+            if (this[i] === obj) {
+                return true
+            }
+        }
+        return false
+    }
+    // eslint-disable-next-line
+    Array.prototype.removeOneValue = function (obj) {
+        console.log(this[0])
+    }
+
     export default {
         data () {
             return {
@@ -82,14 +99,6 @@
                             content: '1+2等于几？',
                             answer: '3',
                             userAnswer: null
-                        },
-                        {
-                            id: '4',
-                            type: 'multiple',
-                            content: '哪些是对的',
-                            options: ['1+1=2', '1+2=3', '1+1=3', '1+2=2'],
-                            answer: [0, 1],
-                            userAnswer: null
                         }
                     ]
                 },
@@ -113,7 +122,8 @@
         },
         mounted() {
 //            this.addJudgment()
-            this.addSingle()
+//            this.addSingle()
+            this.addMutiple()
         },
         methods: {
             finish() {
@@ -124,7 +134,7 @@
                     answer: this.question.answer,
                     userAnswer: null
                 }
-                if (this.question.type === 'single') {
+                if (this.question.type === 'single' || this.question.type === 'multiple') {
                     question.options = this.options
                 }
                 this.exam.questions.push(question)
@@ -151,6 +161,17 @@
                     this.options[i] = this.question.options[i]
                 }
             },
+            addMutiple() {
+                this.question = {
+                    type: 'multiple',
+                    content: '哪些是对的',
+                    options: ['1+1=2', '1+2=3', '1+1=3', '1+2=2'],
+                    answer: [0, 1]
+                }
+                for (let i = 0; i < this.question.options.length; i++) {
+                    this.options[i] = this.question.options[i]
+                }
+            },
             addOption() {
                 this.options.push('')
             },
@@ -160,8 +181,31 @@
                     this.question.answer = 0
                 }
             },
+            isAnswer(index) {
+                if (this.question.type === 'single') {
+                    return index === this.question.answer
+                } else {
+                    // multiple
+                    return this.question.answer.contains(index)
+                }
+            },
             setAnswer(index) {
-                this.question.answer = index
+                if (this.question.type === 'single') {
+                    this.question.answer = index
+                } else {
+                    // multiple
+                    if (this.question.answer.contains(index)) {
+//                        this.question.answer.removeOneValue(index)
+                        for (let i = 0; i < this.question.answer.length; i++) {
+                            if (this.question.answer[i] === index) {
+                                this.question.answer.splice(i, 1)
+                                break
+                            }
+                        }
+                    } else {
+                        this.question.answer.push(index)
+                    }
+                }
             },
             test() {
                 this.$storage.set('exam', this.exam)
@@ -187,7 +231,7 @@
             font-size: 24px;
         }
         .option-list {
-            width: 420px;
+            width: 520px;
             .item {
                 @include clearfix;
             }
