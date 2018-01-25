@@ -10,13 +10,7 @@
                 <ui-list-item title="HTML" to="/cat/html">
                     <ui-icon value="star" slot="left" />
                 </ui-list-item>
-                <ui-list-item title="测试" to="/exams/1">
-                    <ui-icon value="star" slot="left" />
-                </ui-list-item>
-                <ui-list-item title="组卷" to="/make">
-                    <ui-icon value="star" slot="left" />
-                </ui-list-item>
-                <ui-list-item title="添加试卷" to="/exam/add">
+                <ui-list-item title="我的试卷" to="/exams">
                     <ui-icon value="star" slot="left" />
                 </ui-list-item>
                 <ui-divider />

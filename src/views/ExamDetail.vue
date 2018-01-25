@@ -267,7 +267,8 @@
             let id = this.$route.params.id
             if (id === '1') {
             } else {
-                this.questions = this.$storage.get('exam').questions
+                this.exam = this.$storage.get('exam-' + id)
+                this.questions = this.exam.questions
             }
             this.question = this.questions[this.questionIndex]
             this.init()

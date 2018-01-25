@@ -5,8 +5,9 @@ import NProgress from 'nprogress'
 const Home = resolve => require(['@/views/Home'], resolve)
 const About = resolve => require(['@/views/About'], resolve)
 const Html = resolve => require(['@/views/Html'], resolve)
-const Make = resolve => require(['@/views/Make'], resolve)
+const Exam = resolve => require(['@/views/Exam'], resolve)
 const ExamDetail = resolve => require(['@/views/ExamDetail'], resolve)
+const ExamEdit = resolve => require(['@/views/ExamAdd'], resolve)
 const ExamAdd = resolve => require(['@/views/ExamAdd'], resolve)
 const Question = resolve => require(['@/views/Question'], resolve)
 const Error404 = resolve => require(['@/views/error/Error404'], resolve)
@@ -39,8 +40,12 @@ let routes = [
         component: ExamDetail
     },
     {
-        path: '/make',
-        component: Make
+        path: '/exams/:id/edit',
+        component: ExamEdit
+    },
+    {
+        path: '/exams',
+        component: Exam
     },
     {
         path: '*',

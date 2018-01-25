@@ -64,16 +64,17 @@
                 </div>
                 <ui-raised-button class="btn" label="完成" primary @click="finish"/>
                 <ui-raised-button class="btn" label="放弃编辑" @click="cancel"/>
+                <ui-raised-button class="btn" label="删除" @click="removeQuestion"/>
             </div>
             <h2 class="box-title">题目</h2>
             <div v-if="!exam.questions.length">你还没有添加题目</div>
             <div v-else>
                 <ul class="question-list">
-                    <li v-for="(q, index) in exam.questions" @click="edit(q, index)">
+                    <li class="item" v-for="(q, index) in exam.questions" @click="edit(q, index)">
                         {{ q.content }}
                     </li>
                 </ul>
-                <ui-raised-button class="btn" label="开始测试" primary @click="test"/>
+                <ui-raised-button class="btn" label="完成" primary @click="test"/>
             </div>
         </div>
     </my-page>
@@ -98,8 +99,10 @@
     export default {
         data () {
             return {
+                isAdd: true,
                 isEdit: false,
                 exam: {
+                    id: new Date().getTime(),
                     name: '无聊的测试',
                     questions: []
                 },
@@ -126,10 +129,14 @@
         },
         methods: {
             init() {
-                let exam = this.$storage.get('exam')
-                if (exam) {
-                    this.exam = exam
+                if (this.$route.params.id) {
+                    this.isAdd = false
+                    let exam = this.$storage.get('exam-' + this.$route.params.id)
+                    if (exam) {
+                        this.exam = exam
+                    }
                 }
+
 //            this.addJudgment()
 //            this.addSingle()
 //            this.addMutiple()
@@ -158,9 +165,14 @@
                     this.exam.questions.push(question)
                 }
                 this.question = null
-                this.$storage.set('exam', this.exam)
+                this.save()
             },
             cancel() {
+                this.question = null
+            },
+            removeQuestion() {
+                this.exam.questions.splice(this.editIndex, 1)
+                this.save()
                 this.question = null
             },
             edit(q, index) {
@@ -254,9 +266,18 @@
                     }
                 }
             },
+            save() {
+                this.$storage.set('exam-' + this.exam.id, this.exam)
+            },
             test() {
-                this.$storage.set('exam', this.exam)
-                this.$router.push('/exams/2')
+                this.$storage.set('exam-' + this.exam.id, this.exam)
+                let exams = this.$storage.get('exams', [])
+                exams.push({
+                    id: this.exam.id,
+                    name: this.exam.name
+                })
+                this.$storage.set('exams', exams)
+                this.$router.push('/exams')
             },
             numberToLetter(number) {
                 let arr = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
@@ -276,10 +297,6 @@
         .btn {
             margin-right: 8px;
         }
-        .box-title {
-            margin: 16px 0;
-            font-size: 24px;
-        }
         .option-list {
             width: 520px;
             .item {
@@ -290,6 +307,11 @@
             }
             .btn-add {
                 /*float: right;*/
+            }
+        }
+        .question-list {
+            .item {
+                cursor: pointer;
             }
         }
     }
