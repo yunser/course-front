@@ -9,6 +9,7 @@
                 <ui-raised-button class="btn" label="单选题" @click="addSingle"/>
                 <ui-raised-button class="btn" label="多选题" @click="addMutiple"/>
                 <ui-raised-button class="btn" label="问答题" @click="addAq"/>
+                <ui-raised-button class="btn" label="填空题" @click="addFill"/>
             </div>
             <div v-if="question">
                 <div v-if="question.type === 'judgment'">
@@ -50,6 +51,17 @@
                         <ui-text-field class="input" v-model="question.answer" hintText="回答" />
                     </div>
                 </div>
+                <div v-if="question.type === 'fill'">
+                    <ui-badge class="type" :content="type" />
+                    <div>
+                        <div>输入内容：空格用（___表示）</div>
+                        <ui-text-field class="input" v-model="question.content" hintText="内容" />
+                    </div>
+                    <div>
+                        <div>输入答案：多个答案用（,）分隔</div>
+                        <ui-text-field class="input" v-model="question.answer" hintText="回答" />
+                    </div>
+                </div>
                 <ui-raised-button class="btn" label="完成" primary @click="finish"/>
                 <ui-raised-button class="btn" label="放弃编辑" @click="cancel"/>
             </div>
@@ -85,15 +97,7 @@
             return {
                 exam: {
                     name: '无聊的测试',
-                    questions: [
-                        {
-                            id: '2',
-                            type: 'fill',
-                            content: '___秋月何时了，往事___',
-                            answer: ['春花', '知多少'],
-                            userAnswer: null
-                        }
-                    ]
+                    questions: []
                 },
                 question: null, // 当前题目
                 options: []
@@ -117,7 +121,8 @@
 //            this.addJudgment()
 //            this.addSingle()
 //            this.addMutiple()
-            this.addAq()
+//            this.addAq()
+            this.addFill()
         },
         methods: {
             finish() {
@@ -130,7 +135,10 @@
                 }
                 if (this.question.type === 'single' || this.question.type === 'multiple') {
                     question.options = this.options
+                } else if (this.question.type === 'fill') {
+                    question.answer = question.answer.split(',')
                 }
+
                 this.exam.questions.push(question)
                 this.question = null
             },
@@ -171,6 +179,13 @@
                     type: 'aq',
                     content: '1+2等于几？',
                     answer: '3'
+                }
+            },
+            addFill() {
+                this.question = {
+                    type: 'fill',
+                    content: '___秋月何时了，往事___',
+                    answer: '春花,知多少'
                 }
             },
             addOption() {
