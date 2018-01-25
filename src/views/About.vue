@@ -1,5 +1,5 @@
 <template>
-    <my-page title="关于">
+    <my-page title="关于" backable>
         <article class="article">
             <h2>关于我们</h2>
             <p>云设教程致力于提供最新、最全、最好的入门基础教程。</p>

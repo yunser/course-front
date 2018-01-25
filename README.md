@@ -1,4 +1,4 @@
-# template-front
+# course-front
 
 > A Vue.js project
 

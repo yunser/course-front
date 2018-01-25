@@ -1,5 +1,5 @@
 <template>
-    <my-page title="添加试卷">
+    <my-page title="添加试卷" :page="page" backable>
         <div class="exam-add-box">
             <ui-text-field class="input" v-model="exam.name" hintText="试卷名称" />
             <div v-if="!question">
@@ -12,19 +12,15 @@
             </div>
             <div v-if="question">
                 <h2 class="box-title">编辑题目</h2>
+                <div>
+                    <ui-badge class="type" :content="type" />
+                </div>
+                <ui-text-field class="input" v-model="question.content" hintText="请输入题目内容" v-if="question.type !== 'fill'" />
                 <div v-if="question.type === 'judgment'">
-                    <div>
-                        <ui-badge class="type" :content="type" />
-                    </div>
-                    <ui-text-field class="input" v-model="question.content" hintText="内容" />
-                    <div>
-                        <ui-radio class="demo-radio" label="正确" name="group" nativeValue="true" v-model="question.answer"/> <br/>
-                        <ui-radio class="demo-radio" label="错误" name="group"nativeValue="false" v-model="question.answer"/> <br/>
-                    </div>
+                    <ui-radio class="demo-radio" label="正确" name="group" nativeValue="true" v-model="question.answer"/> <br/>
+                    <ui-radio class="demo-radio" label="错误" name="group"nativeValue="false" v-model="question.answer"/> <br/>
                 </div>
                 <div v-if="question.type === 'single' || question.type === 'multiple'">
-                    <ui-badge class="type" :content="type" />
-                    <ui-text-field class="input" v-model="question.content" hintText="内容" />
                     <ul class="option-list">
                         <li
                                 class="item"
@@ -32,9 +28,9 @@
                                 :key="'option' + index">
                             <ui-icon-button icon="delete" @click="removeOption(index)"/>
                             <span class="index">{{ numberToLetter(index) }}</span>
-                            <ui-text-field class="input" v-model="options[index]" hintText="内容" />
+                            <ui-text-field class="input" v-model="options[index]" :hintText="'选项' + numberToLetter(index)" />
                             <span v-if="question.type === 'single' && isAnswer(index)">答案</span>
-                            <span v-if="question.type === 'multiple' && isAnswer(index)" @click="setAnswer(index)">答案（取消答案）</span>
+                            <span v-else-if="question.type === 'multiple' && isAnswer(index)" @click="setAnswer(index)">答案（取消答案）</span>
                             <span v-else @click="setAnswer(index)">设为答案</span>
                         </li>
                         <li class="item">
@@ -45,16 +41,11 @@
                     </ul>
                 </div>
                 <div v-if="question.type === 'aq'">
-                    <ui-badge class="type" :content="type" />
-                    <ui-text-field class="input" v-model="question.content" hintText="内容" />
-                    <div>
-                        <ui-text-field class="input" v-model="question.answer" hintText="回答" />
-                    </div>
+                    <ui-text-field class="input" v-model="question.answer" hintText="回答" />
                 </div>
                 <div v-if="question.type === 'fill'">
-                    <ui-badge class="type" :content="type" />
                     <div>
-                        <div>输入内容：空格用（___表示）</div>
+                        <div>内容：空格用（___表示）</div>
                         <ui-text-field class="input" v-model="question.content" hintText="内容" />
                     </div>
                     <div>
@@ -62,19 +53,37 @@
                         <ui-text-field class="input" v-model="question.answer" hintText="回答" />
                     </div>
                 </div>
-                <ui-raised-button class="btn" label="完成" primary @click="finish"/>
-                <ui-raised-button class="btn" label="放弃编辑" @click="cancel"/>
-                <ui-raised-button class="btn" label="删除" @click="removeQuestion"/>
+                <div class="btns">
+                    <ui-raised-button class="btn" label="完成" primary @click="finish"/>
+                    <ui-raised-button class="btn" label="取消" @click="cancel"/>
+                    <ui-raised-button class="btn" label="删除" @click="removeQuestion" v-if="isEdit"/>
+                </div>
             </div>
-            <h2 class="box-title">题目</h2>
+            <h2 class="box-title">预览</h2>
             <div v-if="!exam.questions.length">你还没有添加题目</div>
-            <div v-else>
+            <div class="preview" v-else>
+                <div class="exam-title">{{ exam.name }}</div>
+                <div class="form">
+                    <div class="form-item">成绩：<span class="input score-100">100</span></div>
+                    <div class="form-item">姓名：<span class="input">XXX</span></div>
+                </div>
                 <ul class="question-list">
-                    <li class="item" v-for="(q, index) in exam.questions" @click="edit(q, index)">
-                        {{ q.content }}
+                    <li class="question-item" v-for="(q, index) in exam.questions" @click="edit(q, index)">
+                        <div class="content">
+                            {{ index + 1 }}.
+                            <span v-if="q.type === 'fill'" v-html="displayFill(q)"></span>
+                            <span v-else>（{{ getQuestionType(q) }}） {{ q.content }}</span>
+                            <span v-if="q.type === 'judgment'">（ <span class="user-input">{{ getCheckOrCross(q.answer) }}</span> ）</span>
+                            <span v-if="q.type === 'single'">（ <span class="user-input">{{ numberToLetter(q.answer) }}</span> ）</span>
+                            <span v-if="q.type === 'multiple'">（ <span class="user-input">{{ numbersToLetters(q.answer) }}</span> ）</span>
+                        </div>
+                        <ul class="question-option-list" v-if="q.type === 'single' || q.type === 'multiple'">
+                            <li class="item" v-for="(item, i) in q.options">{{ numberToLetter(i) }}. {{ item }}</li>
+                        </ul>
+                        <div class="aq-answer" v-if="q.type === 'aq'">答：<span class="user-input">{{ q.answer }}</span></div>
+
                     </li>
                 </ul>
-                <ui-raised-button class="btn" label="完成" primary @click="test"/>
             </div>
         </div>
     </my-page>
@@ -99,11 +108,20 @@
     export default {
         data () {
             return {
+                page: {
+                    menu: [
+                        {
+                            type: 'icon',
+                            icon: 'check',
+                            click: this.test
+                        }
+                    ]
+                },
                 isAdd: true,
                 isEdit: false,
                 exam: {
                     id: new Date().getTime(),
-                    name: '无聊的测试',
+                    name: '未命名',
                     questions: []
                 },
                 question: null, // 当前题目
@@ -112,16 +130,7 @@
         },
         computed: {
             type() {
-                let types = {
-                    single: '单选题',
-                    multiple: '多选题',
-                    fill: '填空题',
-                    aq: '问答题',
-                    judgment: '判断题',
-                    join: '连线题',
-                    code: '编程题' // Attachment
-                }
-                return types[this.question.type]
+                return this.getQuestionType(this.question)
             }
         },
         mounted() {
@@ -182,6 +191,11 @@
                 if (this.question.type === 'judgment') {
                     this.question.answer = this.question.answer ? 'true' : 'false'
                 }
+                if (this.question.type === 'single' || this.question.type === 'multiple') {
+                    for (let i = 0; i < this.question.options.length; i++) {
+                        this.options[i] = this.question.options[i]
+                    }
+                }
             },
             addJudgment() {
                 this.isEdit = false
@@ -195,8 +209,8 @@
                 this.isEdit = false
                 this.question = {
                     type: 'single',
-                    content: '1+1=?',
-                    options: ['2', '1', '3', '4'],
+                    content: '',
+                    options: ['', ''],
                     answer: 0
                 }
                 for (let i = 0; i < this.question.options.length; i++) {
@@ -207,9 +221,9 @@
                 this.isEdit = false
                 this.question = {
                     type: 'multiple',
-                    content: '哪些是对的',
-                    options: ['1+1=2', '1+2=3', '1+1=3', '1+2=2'],
-                    answer: [0, 1]
+                    content: '',
+                    options: ['', '', ''],
+                    answer: []
                 }
                 for (let i = 0; i < this.question.options.length; i++) {
                     this.options[i] = this.question.options[i]
@@ -219,16 +233,16 @@
                 this.isEdit = false
                 this.question = {
                     type: 'aq',
-                    content: '1+2等于几？',
-                    answer: '3'
+                    content: '',
+                    answer: ''
                 }
             },
             addFill() {
                 this.isEdit = false
                 this.question = {
                     type: 'fill',
-                    content: '___秋月何时了，往事___',
-                    answer: '春花,知多少'
+                    content: '',
+                    answer: ''
                 }
             },
             addOption() {
@@ -263,6 +277,7 @@
                         }
                     } else {
                         this.question.answer.push(index)
+                        this.question.answer = this.question.answer.sort()
                     }
                 }
             },
@@ -272,16 +287,50 @@
             test() {
                 this.$storage.set('exam-' + this.exam.id, this.exam)
                 let exams = this.$storage.get('exams', [])
-                exams.push({
-                    id: this.exam.id,
-                    name: this.exam.name
-                })
-                this.$storage.set('exams', exams)
+
+                if (this.isAdd) {
+                    exams.push({
+                        id: this.exam.id,
+                        name: this.exam.name
+                    })
+                    this.$storage.set('exams', exams)
+                } else {
+                    // TODO 修改试卷名
+                }
                 this.$router.push('/exams')
             },
             numberToLetter(number) {
                 let arr = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
                 return arr[number]
+            },
+            numbersToLetters(numbers) {
+                let ret = ''
+                for (let number of numbers) {
+                    ret += this.numberToLetter(number)
+                }
+                return ret
+            },
+            getQuestionType(question) {
+                let types = {
+                    single: '单选题',
+                    multiple: '多选题',
+                    fill: '填空题',
+                    aq: '问答题',
+                    judgment: '判断题',
+                    join: '连线题',
+                    code: '编程题' // Attachment
+                }
+                return types[question.type]
+            },
+            getCheckOrCross(bool) {
+                return bool ? '√' : '×'
+            },
+            displayFill(question) {
+                let idx = 0
+                return question.content.replace(new RegExp('___', 'g'), (word, b) => {
+                    console.log(word, b)
+                    return `<span class="fiil-blank">${question.answer[idx++]}</span>`
+                })
             }
         }
     }
@@ -297,6 +346,9 @@
         .btn {
             margin-right: 8px;
         }
+        .btns {
+            margin-top: 16px;
+        }
         .option-list {
             width: 520px;
             .item {
@@ -310,8 +362,62 @@
             }
         }
         .question-list {
-            .item {
+            .question-item {
+                margin-bottom: 16px;
                 cursor: pointer;
+                border: 1px solid #fff;
+                &:hover {
+                    border: 1px solid #eee;
+                }
+            }
+        }
+        .preview {
+            .exam-title {
+                margin-bottom: 16px;
+                font-size: 20px;
+                text-align: center;
+                font-weight: bold;
+            }
+            .form {
+                margin-bottom: 24px;
+                @include clearfix;
+                .form-item {
+                    float: right;
+                    margin-left: 16px;
+                }
+                .input {
+                    display: inline-block;
+                    border-bottom: 1px solid #000;
+                    width: 100px;
+                    text-align: center;
+                }
+                .score-100 {
+                    color: #f00;
+                }
+            }
+            .user-input {
+                color: #3050ff;
+                font-size: 16px;
+            }
+            .content {
+                margin-bottom: 8px;
+            }
+            .question-option-list {
+                padding-left: 16px;
+                .item {
+                    margin-bottom: 8px;
+                }
+            }
+            .aq-answer {
+                padding-left: 16px;
+            }
+            .fiil-blank {
+                display: inline-block;
+                padding: 0 8px;
+                margin: 0 8px;
+                color: #3050ff;
+                font-size: 16px;
+                border-bottom: 1px solid #000;
             }
         }
     }
