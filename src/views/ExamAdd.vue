@@ -2,9 +2,8 @@
     <my-page title="添加试卷">
         <div class="exam-add-box">
             <ui-text-field class="input" v-model="exam.name" hintText="试卷名称" />
-            <h2 class="box-title">当前编辑题目</h2>
             <div v-if="!question">
-                <div>选择要添加的题目类型</div>
+                <div class="tip">选择要添加的题目类型</div>
                 <ui-raised-button class="btn" label="判断题" @click="addJudgment"/>
                 <ui-raised-button class="btn" label="单选题" @click="addSingle"/>
                 <ui-raised-button class="btn" label="多选题" @click="addMutiple"/>
@@ -12,20 +11,21 @@
                 <ui-raised-button class="btn" label="填空题" @click="addFill"/>
             </div>
             <div v-if="question">
+                <h2 class="box-title">编辑题目</h2>
                 <div v-if="question.type === 'judgment'">
-                    <ui-badge class="type" :content="type" />
+                    <div>
+                        <ui-badge class="type" :content="type" />
+                    </div>
                     <ui-text-field class="input" v-model="question.content" hintText="内容" />
                     <div>
-                        <ui-radio class="demo-radio" label="正确" name="group" :nativeValue="true" v-model="question.answer"/> <br/>
-                        <ui-radio class="demo-radio" label="错误" name="group" :nativeValue="false" v-model="question.answer"/> <br/>
+                        <ui-radio class="demo-radio" label="正确" name="group" nativeValue="true" v-model="question.answer"/> <br/>
+                        <ui-radio class="demo-radio" label="错误" name="group"nativeValue="false" v-model="question.answer"/> <br/>
                     </div>
                 </div>
                 <div v-if="question.type === 'single' || question.type === 'multiple'">
                     <ui-badge class="type" :content="type" />
                     <ui-text-field class="input" v-model="question.content" hintText="内容" />
                     <ul class="option-list">
-                        {{ question.options }}
-                        {{ options }}
                         <li
                                 class="item"
                                 v-for="(item, index) in options"
@@ -65,13 +65,16 @@
                 <ui-raised-button class="btn" label="完成" primary @click="finish"/>
                 <ui-raised-button class="btn" label="放弃编辑" @click="cancel"/>
             </div>
-            <h2 class="box-title">预览</h2>
-            <ul class="question-list">
-                <li v-for="(q, index) in exam.questions" @click="edit(q, index)">
-                    {{ q.content }}
-                </li>
-            </ul>
-            <ui-raised-button class="btn" label="开始测试" primary @click="test"/>
+            <h2 class="box-title">题目</h2>
+            <div v-if="!exam.questions.length">你还没有添加题目</div>
+            <div v-else>
+                <ul class="question-list">
+                    <li v-for="(q, index) in exam.questions" @click="edit(q, index)">
+                        {{ q.content }}
+                    </li>
+                </ul>
+                <ui-raised-button class="btn" label="开始测试" primary @click="test"/>
+            </div>
         </div>
     </my-page>
 </template>
@@ -95,6 +98,7 @@
     export default {
         data () {
             return {
+                isEdit: false,
                 exam: {
                     name: '无聊的测试',
                     questions: []
@@ -118,13 +122,20 @@
             }
         },
         mounted() {
+            this.init()
+        },
+        methods: {
+            init() {
+                let exam = this.$storage.get('exam')
+                if (exam) {
+                    this.exam = exam
+                }
 //            this.addJudgment()
 //            this.addSingle()
 //            this.addMutiple()
 //            this.addAq()
 //            this.addFill()
-        },
-        methods: {
+            },
             finish() {
                 let question = {
                     id: new Date().getTime(), // TODO
@@ -137,6 +148,8 @@
                     question.options = this.options
                 } else if (this.question.type === 'fill') {
                     question.answer = question.answer.split(',')
+                } else if (question.type === 'judgment') {
+                    question.answer = question.answer === 'true'
                 }
 
                 if (this.isEdit) {
@@ -145,6 +158,7 @@
                     this.exam.questions.push(question)
                 }
                 this.question = null
+                this.$storage.set('exam', this.exam)
             },
             cancel() {
                 this.question = null
@@ -153,13 +167,16 @@
                 this.isEdit = true
                 this.editIndex = index
                 this.question = q
+                if (this.question.type === 'judgment') {
+                    this.question.answer = this.question.answer ? 'true' : 'false'
+                }
             },
             addJudgment() {
                 this.isEdit = false
                 this.question = {
                     type: 'judgment',
-                    content: '水果是苹果吗',
-                    answer: true
+                    content: '',
+                    answer: 'true'
                 }
             },
             addSingle() {
@@ -253,6 +270,9 @@
     @import "../scss/var";
 
     .exam-add-box {
+        .tip {
+            margin-bottom: 16px;
+        }
         .btn {
             margin-right: 8px;
         }
