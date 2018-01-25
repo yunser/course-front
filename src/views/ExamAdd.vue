@@ -67,7 +67,7 @@
             </div>
             <h2 class="box-title">预览</h2>
             <ul class="question-list">
-                <li v-for="q in exam.questions">
+                <li v-for="(q, index) in exam.questions" @click="edit(q, index)">
                     {{ q.content }}
                 </li>
             </ul>
@@ -122,7 +122,7 @@
 //            this.addSingle()
 //            this.addMutiple()
 //            this.addAq()
-            this.addFill()
+//            this.addFill()
         },
         methods: {
             finish() {
@@ -139,13 +139,23 @@
                     question.answer = question.answer.split(',')
                 }
 
-                this.exam.questions.push(question)
+                if (this.isEdit) {
+                    this.exam.questions.splice(this.editIndex, 1, question)
+                } else {
+                    this.exam.questions.push(question)
+                }
                 this.question = null
             },
             cancel() {
                 this.question = null
             },
+            edit(q, index) {
+                this.isEdit = true
+                this.editIndex = index
+                this.question = q
+            },
             addJudgment() {
+                this.isEdit = false
                 this.question = {
                     type: 'judgment',
                     content: '水果是苹果吗',
@@ -153,6 +163,7 @@
                 }
             },
             addSingle() {
+                this.isEdit = false
                 this.question = {
                     type: 'single',
                     content: '1+1=?',
@@ -164,6 +175,7 @@
                 }
             },
             addMutiple() {
+                this.isEdit = false
                 this.question = {
                     type: 'multiple',
                     content: '哪些是对的',
@@ -175,6 +187,7 @@
                 }
             },
             addAq() {
+                this.isEdit = false
                 this.question = {
                     type: 'aq',
                     content: '1+2等于几？',
@@ -182,6 +195,7 @@
                 }
             },
             addFill() {
+                this.isEdit = false
                 this.question = {
                     type: 'fill',
                     content: '___秋月何时了，往事___',
