@@ -4,9 +4,11 @@
             <ui-text-field class="input" v-model="exam.name" hintText="试卷名称" />
             <h2 class="box-title">当前编辑题目</h2>
             <div v-if="!question">
-                <ui-raised-button class="btn" label="添加判断题" @click="addJudgment"/>
-                <ui-raised-button class="btn" label="添加单选题" @click="addSingle"/>
-                <ui-raised-button class="btn" label="添加多选题" @click="addMutiple"/>
+                <div>选择要添加的题目类型</div>
+                <ui-raised-button class="btn" label="判断题" @click="addJudgment"/>
+                <ui-raised-button class="btn" label="单选题" @click="addSingle"/>
+                <ui-raised-button class="btn" label="多选题" @click="addMutiple"/>
+                <ui-raised-button class="btn" label="问答题" @click="addAq"/>
             </div>
             <div v-if="question">
                 <div v-if="question.type === 'judgment'">
@@ -40,6 +42,13 @@
                             <ui-icon-button class="btn-add" icon="add" @click="addOption"/>
                         </li>
                     </ul>
+                </div>
+                <div v-if="question.type === 'aq'">
+                    <ui-badge class="type" :content="type" />
+                    <ui-text-field class="input" v-model="question.content" hintText="内容" />
+                    <div>
+                        <ui-text-field class="input" v-model="question.answer" hintText="回答" />
+                    </div>
                 </div>
                 <ui-raised-button class="btn" label="完成" primary @click="finish"/>
                 <ui-raised-button class="btn" label="放弃编辑" @click="cancel"/>
@@ -77,27 +86,11 @@
                 exam: {
                     name: '无聊的测试',
                     questions: [
-//                    {
-//                        id: '1',
-//                        type: 'join',
-//                        content: '四大名著连一连',
-//                        leftItems: ['《水浒传》', '《西游记》', '《三国演义》', '《红楼梦》'],
-//                        rightItems: ['罗贯中', '施耐庵', '曹雪芹', '吴承恩'],
-//                        answer: [[0, 1], [1, 3], [2, 0], [4, 2]],
-//                        userAnswer: null
-//                    },
                         {
                             id: '2',
                             type: 'fill',
                             content: '___秋月何时了，往事___',
                             answer: ['春花', '知多少'],
-                            userAnswer: null
-                        },
-                        {
-                            id: '3',
-                            type: 'aq',
-                            content: '1+2等于几？',
-                            answer: '3',
                             userAnswer: null
                         }
                     ]
@@ -123,7 +116,8 @@
         mounted() {
 //            this.addJudgment()
 //            this.addSingle()
-            this.addMutiple()
+//            this.addMutiple()
+            this.addAq()
         },
         methods: {
             finish() {
@@ -170,6 +164,13 @@
                 }
                 for (let i = 0; i < this.question.options.length; i++) {
                     this.options[i] = this.question.options[i]
+                }
+            },
+            addAq() {
+                this.question = {
+                    type: 'aq',
+                    content: '1+2等于几？',
+                    answer: '3'
                 }
             },
             addOption() {
