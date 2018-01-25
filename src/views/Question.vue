@@ -1,5 +1,5 @@
 <template>
-    <my-page title="关于">
+    <my-page title="我的题目">
         <article class="article">
             <ul>
                 <li v-for="exam in exams">

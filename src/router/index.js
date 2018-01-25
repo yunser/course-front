@@ -5,9 +5,10 @@ import NProgress from 'nprogress'
 const Home = resolve => require(['@/views/Home'], resolve)
 const About = resolve => require(['@/views/About'], resolve)
 const Html = resolve => require(['@/views/Html'], resolve)
-const Testing = resolve => require(['@/views/Testing'], resolve)
 const Make = resolve => require(['@/views/Make'], resolve)
-
+const ExamDetail = resolve => require(['@/views/ExamDetail'], resolve)
+const ExamAdd = resolve => require(['@/views/ExamAdd'], resolve)
+const Question = resolve => require(['@/views/Question'], resolve)
 const Error404 = resolve => require(['@/views/error/Error404'], resolve)
 
 Vue.use(Router)
@@ -26,8 +27,16 @@ let routes = [
         component: Html
     },
     {
-        path: '/testing',
-        component: Testing
+        path: '/question',
+        component: Question
+    },
+    {
+        path: '/exam/add',
+        component: ExamAdd
+    },
+    {
+        path: '/exams/:id',
+        component: ExamDetail
     },
     {
         path: '/make',

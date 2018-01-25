@@ -139,11 +139,10 @@
 </template>
 
 <script>
-    /* eslint-disable */
-    import demoCode from '!raw-loader!./demo.vue'
-    import exampleFormCode from 'raw-loader!./README.md'
     import {format} from '@/util/time'
     const FILL = '___'
+
+    // eslint-disable-next-line
     Array.prototype.contains = function (obj) {
         var i = this.length
         while (i--) {
@@ -157,8 +156,6 @@
     export default {
         data () {
             return {
-                exampleFormCode: exampleFormCode,
-                demoCode: demoCode,
                 questionIndex: 0,
                 questions: [
 //                    {
@@ -178,21 +175,21 @@
                         userAnswer: null
                     },
                     {
-                        id: '1',
+                        id: '2',
                         type: 'fill',
                         content: '___秋月何时了，往事___',
                         answer: ['春花', '知多少'],
                         userAnswer: null
                     },
                     {
-                        id: '1',
+                        id: '3',
                         type: 'aq',
                         content: '1+2等于几？',
                         answer: '3',
                         userAnswer: null
                     },
                     {
-                        id: '1',
+                        id: '4',
                         type: 'multiple',
                         content: '哪些是对的',
                         options: ['1+1=2', '1+2=3', '1+1=3', '1+2=2'],
@@ -200,7 +197,7 @@
                         userAnswer: null
                     },
                     {
-                        id: '1',
+                        id: '5',
                         type: 'single',
                         content: '1+1=?',
                         options: ['1', '2', '3', '4'],
@@ -270,6 +267,11 @@
             }
         },
         mounted() {
+            let id = this.$route.params.id
+            if (id === '1') {
+            } else {
+                this.questions = this.$storage.get('exam').questions
+            }
             this.question = this.questions[this.questionIndex]
             this.init()
             // 测试
