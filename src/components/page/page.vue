@@ -1,5 +1,5 @@
 <template>
-    <ui-page :title="title || page.title" :page="page" ref="page" :backbale="backable" :containerMaxWidth="containerMaxWidth">
+    <ui-page :title="title || page.title" :page="page" ref="page" :backable="backable" :containerMaxWidth="containerMaxWidth">
         <div slot="drawer">
             <ui-appbar title=""></ui-appbar>
             <ui-list @itemClick="toggle()">
