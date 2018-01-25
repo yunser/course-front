@@ -11,6 +11,7 @@
                     {{ exam.name }}
                     <router-link :to="'/exams/' + exam.id">查看</router-link>
                     <router-link :to="`/exams/${exam.id}/edit`">编辑</router-link>
+                    <a href="#" @click.prevent="remove(exam)">删除</a>
                 </li>
             </ul>
         </section>
@@ -36,6 +37,16 @@
                 } else {
                     this.$storage.get('exams', [])
                 }
+            },
+            remove(exam) {
+                let exams = this.$storage.get('exams')
+                for (let i = 0; i < exams.length; i++) {
+                    if (exams[i].id === exam.id) {
+                        exams.splice(i, 1)
+                        this.exams.splice(i, 1)
+                    }
+                }
+                this.$storage.set('exams', exams)
             }
         }
     }
