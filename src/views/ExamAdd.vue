@@ -1,42 +1,55 @@
 <template>
-    <my-page title="关于">
-        <article class="article">
-            <div>
-                <ui-text-field class="input" v-model="exam.name" hintText="试卷名称" />
-                <h2 class="box-title">当前编辑题目</h2>
-                <div v-if="!question">
-                    <ui-raised-button class="btn" label="添加判断题" @click="addJudgment"/>
-                    <ui-raised-button class="btn" label="添加单选题" @click="addSingle"/>
-                </div>
-                <div v-if="question">
-                    <div v-if="question.type === 'judgment'">
-                        <ui-badge class="type" :content="type" />
-                        <ui-text-field class="input" v-model="question.content" hintText="内容" />
-                        <div>
-                            <ui-radio class="demo-radio" label="正确" name="group" :nativeValue="true" v-model="question.answer"/> <br/>
-                            <ui-radio class="demo-radio" label="错误" name="group" :nativeValue="false" v-model="question.answer"/> <br/>
-                        </div>
-                    </div>
-                    <div v-if="question.type === 'single'">
-                        <ui-badge class="type" :content="type" />
-                        <ui-text-field class="input" v-model="question.content" hintText="内容" />
-                        <div>
-                            <ui-radio class="demo-radio" label="正确" name="group" :nativeValue="true" v-model="question.answer"/> <br/>
-                            <ui-radio class="demo-radio" label="错误" name="group" :nativeValue="false" v-model="question.answer"/> <br/>
-                        </div>
-                    </div>
-                    <ui-raised-button class="btn" label="完成" primary @click="finish"/>
-                    <ui-raised-button class="btn" label="放弃编辑" @click="cancel"/>
-                </div>
-                <h2 class="box-title">预览</h2>
-                <ul class="question-list">
-                    <li v-for="q in exam.questions">
-                        {{ q.content }}
-                    </li>
-                </ul>
-                <ui-raised-button class="btn" label="开始测试" primary @click="test"/>
+    <my-page title="添加试卷">
+        <div class="exam-add-box">
+            <ui-text-field class="input" v-model="exam.name" hintText="试卷名称" />
+            <h2 class="box-title">当前编辑题目</h2>
+            <div v-if="!question">
+                <ui-raised-button class="btn" label="添加判断题" @click="addJudgment"/>
+                <ui-raised-button class="btn" label="添加单选题" @click="addSingle"/>
             </div>
-        </article>
+            <div v-if="question">
+                <div v-if="question.type === 'judgment'">
+                    <ui-badge class="type" :content="type" />
+                    <ui-text-field class="input" v-model="question.content" hintText="内容" />
+                    <div>
+                        <ui-radio class="demo-radio" label="正确" name="group" :nativeValue="true" v-model="question.answer"/> <br/>
+                        <ui-radio class="demo-radio" label="错误" name="group" :nativeValue="false" v-model="question.answer"/> <br/>
+                    </div>
+                </div>
+                <div v-if="question.type === 'single'">
+                    <ui-badge class="type" :content="type" />
+                    <ui-text-field class="input" v-model="question.content" hintText="内容" />
+                    <ul class="option-list">
+                        {{ question.options }}
+                        {{ options }}
+                        <li
+                                class="item"
+                                v-for="(item, index) in options"
+                                :key="'option' + index">
+                            <ui-icon-button icon="delete" @click="removeOption(index)"/>
+                            <span class="index">{{ numberToLetter(index) }}</span>
+                            <ui-text-field class="input" v-model="options[index]" hintText="内容" />
+                            <span v-if="index === question.answer">答案</span>
+                            <span v-else @click="setAnswer(index)">设为答案</span>
+                        </li>
+                        <li class="item">
+                            <!--<span class="index">{{ numberToLetter(index) }}</span>-->
+                            <!--<ui-text-field class="input" v-model="options[index]" hintText="内容" />-->
+                            <ui-icon-button class="btn-add" icon="add" @click="addOption"/>
+                        </li>
+                    </ul>
+                </div>
+                <ui-raised-button class="btn" label="完成" primary @click="finish"/>
+                <ui-raised-button class="btn" label="放弃编辑" @click="cancel"/>
+            </div>
+            <h2 class="box-title">预览</h2>
+            <ul class="question-list">
+                <li v-for="q in exam.questions">
+                    {{ q.content }}
+                </li>
+            </ul>
+            <ui-raised-button class="btn" label="开始测试" primary @click="test"/>
+        </div>
     </my-page>
 </template>
 
@@ -77,18 +90,11 @@
                             options: ['1+1=2', '1+2=3', '1+1=3', '1+2=2'],
                             answer: [0, 1],
                             userAnswer: null
-                        },
-                        {
-                            id: '5',
-                            type: 'single',
-                            content: '1+1=?',
-                            options: ['1', '2', '3', '4'],
-                            answer: 1,
-                            userAnswer: null
                         }
                     ]
                 },
-                question: null // 当前题目
+                question: null, // 当前题目
+                options: []
             }
         },
         computed: {
@@ -106,8 +112,8 @@
             }
         },
         mounted() {
-            this.addJudgment()
-//            this.addSingle()
+//            this.addJudgment()
+            this.addSingle()
         },
         methods: {
             finish() {
@@ -116,7 +122,10 @@
                     type: this.question.type,
                     content: this.question.content,
                     answer: this.question.answer,
-                    userAnswer: this.question.userAnswer
+                    userAnswer: null
+                }
+                if (this.question.type === 'single') {
+                    question.options = this.options
                 }
                 this.exam.questions.push(question)
                 this.question = null
@@ -128,33 +137,66 @@
                 this.question = {
                     type: 'judgment',
                     content: '水果是苹果吗',
-                    answer: true,
-                    userAnswer: null
+                    answer: true
                 }
             },
             addSingle() {
                 this.question = {
                     type: 'single',
                     content: '1+1=?',
-                    options: ['1', '2', '3', '4'],
-                    answer: 1,
-                    userAnswer: null
+                    options: ['2', '1', '3', '4'],
+                    answer: 0
                 }
+                for (let i = 0; i < this.question.options.length; i++) {
+                    this.options[i] = this.question.options[i]
+                }
+            },
+            addOption() {
+                this.options.push('')
+            },
+            removeOption(index) {
+                this.options.splice(index, 1)
+                if (this.question.answer === index) {
+                    this.question.answer = 0
+                }
+            },
+            setAnswer(index) {
+                this.question.answer = index
             },
             test() {
                 this.$storage.set('exam', this.exam)
                 this.$router.push('/exams/2')
+            },
+            numberToLetter(number) {
+                let arr = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+                return arr[number]
             }
         }
     }
 </script>
 
-<style scoped>
-    .btn {
-        margin-right: 8px;
-    }
-    .box-title {
-        margin: 16px 0;
-        font-size: 24px;
+<style lang="scss">
+    @import "../scss/var";
+
+    .exam-add-box {
+        .btn {
+            margin-right: 8px;
+        }
+        .box-title {
+            margin: 16px 0;
+            font-size: 24px;
+        }
+        .option-list {
+            width: 420px;
+            .item {
+                @include clearfix;
+            }
+            .index {
+                margin-right: 8px;
+            }
+            .btn-add {
+                /*float: right;*/
+            }
+        }
     }
 </style>

@@ -95,12 +95,13 @@ $error: #f44;
         @include clearfix;
         .item {
             margin-bottom: 16px;
-            border: 1px solid #eee;
+            //border: 1px solid #eee;
+            border: 1px solid $error;
             &.success {
                 border: 1px solid $success;
             }
             &.error {
-                border: 1px solid $error;
+
             }
         }
     }

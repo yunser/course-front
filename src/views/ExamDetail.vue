@@ -62,7 +62,7 @@
             <div>分数：{{ score }}</div>
             <ul class="answer-list">
                 <li class="item"
-                    :class="{success: isSuccess(q), error: !isSuccess(q)}"
+                    :class="{success: isSuccess(q)}"
                     v-for="(q, index) in questions">
                     <h3 v-if="q.type !== 'fill'">问题：{{ q.content }}</h3>
                     <h3 v-if="q.type === 'fill'">问题：{{ getFillContent(q.content) }}</h3>
@@ -86,7 +86,7 @@
 
                     <div v-if="q.type === 'single' || q.type === 'multiple' || q.type === 'aq'">
                         <div v-if="q.userAnswer || q.userAnswer === 0">
-                            <div v-if="q.type === 'single'">你的回答：{{ numberToLetter(q.userAnswer) }}. {{ q.options[q.userAnswer] }}</div>
+                            <div v-if="q.type === 'single'"> 你的回答：{{ numberToLetter(q.userAnswer) }}. {{ q.options[q.userAnswer] }}</div>
                             <div v-if="q.type === 'multiple'">
                                 你的回答：
                                 <div v-for="answer in q.userAnswer">
@@ -114,9 +114,6 @@
         </div>
 
         <ul>
-
-
-
             <!--请选择产生斜体字的 HTML 标签：-->
             <!--<i>-->
             <!--<italics>-->
@@ -343,12 +340,15 @@
                 return false
             },
             isSuccess(question) {
+                console.log('判断')
+                if (question.type === 'single') {
+                    console.log('单选题' + question.userAnswer === question.answer)
+                    return question.userAnswer === question.answer
+                }
                 if (question.type !== 'fill' && !question.userAnswer) {
                     return false
                 }
-                if (question.type === 'single') {
-                    return question.userAnswer === question.answer
-                }
+
                 if (question.type === 'multiple') {
                     // 少选多选不给分
                     if (question.answer.length !== question.userAnswer.length) {
