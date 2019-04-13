@@ -3,6 +3,12 @@
 $success: #55a532;
 $error: #f44;
 
+html,
+body,
+#app,
+.ui-page {
+    height: 100%;
+}
 // TODO
 .exam-box {
     padding: 16px;

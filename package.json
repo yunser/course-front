@@ -14,14 +14,8 @@
     "axios": "^0.17.1",
     "highlight.js": "^9.12.0",
     "marked": "^0.3.12",
-    "module": "^1.2.5",
-    "muse-ui": "^2.1.0",
     "nprogress": "^0.2.0",
-    "qs": "^6.5.1",
-    "vue": "^2.5.2",
-    "vue-router": "^3.0.1",
-    "vue-server-renderer": "^2.5.9",
-    "yunser-ui-vue": "^0.1.25"
+    "qs": "^6.5.1"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",

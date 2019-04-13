@@ -10,7 +10,10 @@
                 <ui-list-item title="HTML" to="/cat/html">
                     <ui-icon value="star" slot="left" />
                 </ui-list-item>
-                <ui-list-item title="我的试卷" to="/exams">
+                <ui-list-item title="我的表单" to="/forms">
+                    <ui-icon value="star" slot="left" />
+                </ui-list-item>
+                <ui-list-item title="知识王者" to="/know">
                     <ui-icon value="star" slot="left" />
                 </ui-list-item>
                 <ui-divider />

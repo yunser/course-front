@@ -1,0 +1,111 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+  <title>onLine</title>
+  <link rel="stylesheet" href="css/base.css"/>
+  <link rel="stylesheet" href="css/onLine.css"/>
+  <script src="http://libs.baidu.com/jquery/1.8.2/jquery.min.js"></script>
+  <script src="js/onLine.js"></script>
+  <script type="text/javascript">
+  $(function(){	
+		var obj = $(".demo");
+		var size = obj.size();
+		for(var i=0; i<size; i++ ){
+			obj.eq(i).onLine({
+				regainCanvas: true
+			});
+		}
+  });
+  </script>
+</head>
+<body> 
+    <div id="test" data-pair = 5 class="demo pt10">	
+        <div class="show cb">
+			<div class="tools">
+			    <div class="savePair">savePair</div>
+				<div class="getPair">getPair</div>
+           		<div class="goBackBtn">回退</div>                                
+                <div class="resetCanvasBtn">重置</div>	
+            </div>
+            <div class="showleft"><!--左侧-->
+            	<span class="showitem" data-id="L1">0.99999 ......</span>
+                <span class="showitem" data-id="L2">
+					[8, a, 6 ] <br/>
+					[3, b, c ] <br/>
+					[d, e, f ]
+				</span>
+                <span class="showitem" data-id="L3">
+					[a, 3, 8 ] <br/>
+					[b, c, d ] <br/>
+					[e, f, 6 ]
+				</span>
+                <span class="showitem" data-id="L4">1
+					1 - 1/3 + 1/5 - 1/7 + 1/9 - 1/11 ......
+				</span>
+                <span class="showitem" data-id="L5"> 0.618 </span>
+                <span class="showitem" data-id="L6"> 1/0 </span>
+            </div>
+            <div class="showright"><!--右侧-->
+                <span class="showitem" data-id="R1"> 0.372 </span>
+                <span class="showitem" data-id="R2">
+					a=4; b= 9, c=5, d=1, e=2, f=7
+				</span>
+                <span class="showitem" data-id="R3"> ∞ </span>
+                <span class="showitem" data-id="R4">
+					a=1; b= 5, c=7, d=4, e=9, f=2
+				</span>
+                <span class="showitem" data-id="R5">1/2 + 1/4 + 1/8 + 1/16 ......</span>
+                <span class="showitem" data-id="R6"> pi</span>      	
+            </div>
+			<!-- -->
+            <canvas class="canvas"></canvas>
+            <canvas class="backcanvas"></canvas>
+        </div>            
+    </div> 
+<!-------------------      -------------------------------------->
+    <div id="test2" data-pair = 5 class="demo pt10">	
+        <div class="show topBottom cb">
+			<div class="tools">
+			    <div class="savePair">savePair</div>
+				<div class="getPair">getPair</div>
+           		<div class="goBackBtn">回退</div>                                
+                <div class="resetCanvasBtn">重置</div>	
+            </div>
+            <div class="showtop"><!--左侧-->
+            	<span class="showitem" data-id="L1">0.99999 ......</span>
+                <span class="showitem" data-id="L2">
+					[8, a, 6 ] <br/>
+					[3, b, c ] <br/>
+					[d, e, f ]
+				</span>
+                <span class="showitem" data-id="L3">
+					[a, 3, 8 ] <br/>
+					[b, c, d ] <br/>
+					[e, f, 6 ]
+				</span>
+                <span class="showitem" data-id="L4">1
+					1 - 1/3 + 1/5 - 1/7 + 1/9 - 1/11 ......
+				</span>
+                <span class="showitem" data-id="L5"> 0.618 </span>
+                <span class="showitem" data-id="L6"> 1/0 </span>
+            </div>
+            <div class="showbottom"><!--右侧-->
+                <span class="showitem" data-id="R1"> 0.372 </span>
+                <span class="showitem" data-id="R2">
+					a=4; b= 9, c=5, d=1, e=2, f=7
+				</span>
+                <span class="showitem" data-id="R3"> ∞ </span>
+                <span class="showitem" data-id="R4">
+					a=1; b= 5, c=7, d=4, e=9, f=2
+				</span>
+                <span class="showitem" data-id="R5">1/2 + 1/4 + 1/8 + 1/16 ......</span>
+                <span class="showitem" data-id="R6"> pi</span>      	
+            </div>
+			<!-- -->
+            <canvas class="canvas"></canvas>
+            <canvas class="backcanvas"></canvas>
+        </div>            
+    </div>       
+</body>
+</html>

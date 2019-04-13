@@ -1,0 +1,366 @@
+.show { 
+	position:relative;
+	width:500px; 
+	margin:40px 100px; 
+	border:10px solid #CCC; 
+	cursor:pointer;
+} 
+.show.topBottom {
+	width: 1000px;
+}
+.canvas{ 
+	position:absolute; 
+	left:0px; 
+	top:0px; 
+	z-index:-1;
+}
+.backcanvas{ 
+	position:absolute; 
+	left:0px; 
+	top:0px; 
+	z-index:-2;
+}
+.showleft{ 
+	float:left;
+	width:150px; 
+}
+.showright {
+	float:right;
+	width:150px; 
+} 
+.showtop, .showbottom {
+	float: left;
+}
+.showtop {
+	margin-top: 20px; 
+}
+.showbottom {
+	margin-top: 120px;
+	margin-bottom: 20px; 
+}
+.show .showitem{
+	width:130px; 
+	height:60px; 
+	display:block; 
+	margin:10px 0;
+	background:#0CF; 
+	border-radius:15px; 
+	padding:10px;
+	color:#fff;
+}
+.show.topBottom .showitem {
+	float: left; 
+	margin: 0 10px; 
+}
+.show span.addstyle { 
+	background:#F96;
+}
+.tools{ 
+	position:absolute; 
+	height:50px; 
+	width: calc( 100% + 20px ); 
+	position:absolute; 
+	top:-50px; 
+	left:-10px;
+	border:10px solid #CCC;}
+.tools div{ 
+	float:right; 
+	height:50px; 
+	padding:0 5px; 
+	margin:0 5px; 
+	color:#0C9; 
+	cursor:pointer; 
+	line-height:30px;
+}
+.tools div:hover{ 
+	color:#C30;
+}
+.showimg{ 
+	position:absolute; 
+	left:510px; 
+	top:0px; width:500px;
+}
+/*----------------*/
+#resume {
+	width: 960px;
+	width: 60%;
+}
+#resume > header {
+	text-align: right;
+	position: relative;	
+}
+#resume > header h1 {
+	color: #fff;
+	font-size: 36px;
+	background: #aab7bf;
+	padding: 100px 200px 20px 0; 
+}
+#resume > header figure {
+	width: 140px;
+	height: 160px;
+	padding: 10px;
+	position: absolute;
+	right: 40px;
+	top: 70px;
+	background: rgba(255,255,255,0.8);
+}
+#resume > header figure img {
+	width: 100%;
+	height: 100%;
+}
+#resume > header ul,#resume > header p {
+	line-height: 25px;
+	padding-right: 200px;
+	color: #666;
+}
+#resume > header li {
+	display: inline-block;
+	padding-left: 10px;
+}
+#resume > header li:last-child {
+	display: block;
+}
+#resume > header li span {
+	font-size: 18px;
+	padding-right: 5px;
+}
+#resume dl {
+	padding-top: 15px;
+}
+#resume dl dt {
+	color: #aab7bf;
+	font-size: 24px;
+	height: 40px;
+	line-height: 40px;
+}
+#resume dl dd {
+	padding-left: 125px;
+	line-height: 35px;
+}
+#resume dl dd div {
+	display: inline-block;
+	min-width: 100px;
+	min-height: 25px;
+	margin: 0 5px;
+	padding: 0 5px;
+	text-align: center;
+	border-bottom: 1px solid #666;
+}
+#resume dl dd div.active, #resume dl dd div:hover {
+	border-bottom: 1px solid #ff6600;
+}
+#resume dl dd.title {
+	line-height: 30px;
+	position: relative;
+}
+#resume dl dd > span {
+	font-weight: bold;
+}
+#resume dl dd.title > span:first-child {
+	width: 120px;
+	display: inline-block;
+	padding-right: 5px;
+	text-align: right;
+	position: absolute;
+	top: 0;
+	left: 0; 
+}
+#resume dl.check dd {
+	padding-left: 30px;
+	background: url("../images/check.png") 0 5px no-repeat;
+}
+.resumeBlock {
+	width: 960px;
+	color: #666;
+	margin: 0 auto;
+	padding: 5px 0 25px 0; 
+	line-height: 30px;
+	border-top: 1px dotted #ff6600; 
+}
+.resumeBlock:first-child {
+	border-top: none;
+}
+.resumeBlock dt {
+	padding-top: 5px;
+	font-size: 24px;
+	color: #28a6ce;
+}
+.resumeBlock dd { 
+}
+.resumeBlock dd[ondrop] {
+	border: 1px solid #999;
+	min-height: 30px;
+	margin-top: 5px;
+}
+.resumeBlock dd[ondrop].active, .resumeBlock dd[ondrop]:hover{
+	border: 1px solid #ff6600;
+}
+.resumeBlock dd[ondrop] > div {
+	padding: 15px; 
+}
+#aside {
+	display: inline-block;
+	width: 16%;
+	height: 80%; 
+	padding: 5px 5px 5px 10px;
+	position: fixed;
+	top: 0;
+	left: auto;
+	right: 20px;
+	bottom: 0;
+	margin: auto;
+	overflow: auto;
+	background: rgba(170,183,191,0.2);
+}
+#aside > span, #aside > div {
+	display: inline-block;
+	padding: 5px 10px;
+	margin: 0 5px 5px 0;
+	background: #fefefe
+}
+/*menuBox*/
+#menu {
+	width: 380px;
+	height: 500px;
+	position: fixed;
+	top: 120px;
+	left: 50%; 
+	margin-left: 385px;
+	z-index: 10;
+	transition: margin-left 0.6s;
+}
+#menu .btn {
+	width: 30px;
+	height: 20px;
+	border-top: 2px solid #ccc;
+	border-bottom: 2px solid #ccc;
+	display: inline-block;
+	position: absolute;
+	top: 10px;
+	left: 10px; 
+	cursor: pointer;
+}
+#menu .btn:before, #menu .btn:after{
+	content: " ";
+	width: 13px;
+	height: 2px;
+	display: inline-block;
+	position: absolute;
+	top: 7px;
+	left: 0;
+	background: #ccc;
+}
+#menu .btn:after {
+	right: 0; 
+	left: auto;
+}
+#menu > header, #menu > .conBox {
+	display: none;
+}
+#menu.active > header {
+	height: 40px;
+	line-height: 38px;
+	margin: 0 10px;
+	background: #f9f9f9;
+	display: block;
+	text-align: right;
+	border-bottom: 2px solid #ccc;
+}
+#menu.active > header span {
+	padding: 0 10px;
+	display: inline-block;
+}
+#menu.active > header span.active {
+	color: #ff6600; 
+	border-bottom: 2px solid #ff6600;
+}
+#menu.active > header span:not(.active):hover {
+	color: #ff6600;
+	cursor: pointer;
+}
+#menu.active > .conBox {
+	height: 460px;
+	padding: 10px;
+	display: none; 
+	overflow: auto;
+	background: #f9f9f9;
+}
+#menu.active > .conBox.active{
+	display: block;
+}
+#menu > .conBox > span {
+	display: inline-block;
+	background: #f2f2f2;
+	border: 1px solid #bbb;
+	padding: 5px 10px;
+	margin-right: 10px;
+}
+#menu > .conBox > * {
+	background: #f2f2f2;
+	padding: 10px;
+	margin-bottom: 10px;
+}
+#menu > .conBox > img {
+	height: 80px;
+	padding: 10px;
+	background: #fff;
+	margin: 0 10px 10px 0;
+}
+#menu.active  {
+	margin-left: 205px;
+}
+#menu.active ~ .menuBox {
+	margin-left: -570px;
+}
+.menuBox {
+	left: 50%;
+	width: 770px;
+	padding: 10px 0 10px 10px;
+	position: relative;
+	margin-bottom: 10px;
+	margin-left: -380px;
+	background: #f2f2f2;
+	transition: margin-left 0.6s;
+}
+.menuBox dt {
+	min-height: 41px;
+	line-height: 40px;
+	position: relative;
+	padding-left: 15px;
+	margin-bottom: 10px;
+	border-bottom: 1px solid #ccc;
+}
+.menuBox dd {
+	position: relative;
+	display: inline-block;
+}
+.menuBox dd.imgBox {
+	width: 120px;
+	height: 120px;
+	float: left;
+	position: relative;
+	background: #fff;
+}
+.menuBox dd.imgBox img {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0; 
+	margin: auto; 
+	max-width: 95%;
+	max-height: 95%;
+}
+.menuBox dd.textBox {
+	float: right;
+	width: 620px;
+	padding: 5px 10px;
+	min-height: 120px;
+	line-height: 25px;
+}
+.menuBox dd.textBox span {
+	float: right; 
+}
+.menuBox > *[ondrop]:hover, .menuBox > *[ondrop].active {
+	background: #ccc;
+}

@@ -11,47 +11,47 @@
         <div class="simple-answer-card" v-if="state === 'start'">
             <h2 class="card-title">答题卡</h2>
             <ul class="answer-list">
-                <li class="item" v-for="(q, index) in questions">
+                <li class="item" v-for="(q, index) in forms">
                     <ui-raised-button class="round-btn unknown"
-                                      :class="{finish: isDone(q), current: index === questionIndex}"
+                                      :class="{finish: isDone(q), current: index === formIndex}"
                                       :label="'' + (index + 1)"
                                       @click="selectIndex(index)" />
                 </li>
             </ul>
         </div>
         <div class="exam-box" v-if="state === 'start'">
-            <!--<div class="index">第 {{ questionIndex + 1 }} 题</div>-->
+            <!--<div class="index">第 {{ formIndex + 1 }} 题</div>-->
             <ui-badge class="type" :content="type" />
             <!--<h2 class="type">{{ type }}</h2>-->
-            <h3 class="title" v-if="question.type !== 'fill'">{{ question.content }}</h3>
-            <ui-text-field class="input" v-model="question.userAnswer" v-if="question.type === 'aq'" />
-            <div v-if="question.type === 'fill'">
-                <span v-for="(content, index) in question._content">
+            <h3 class="title" v-if="form.type !== 'fill'">{{ form.content }}</h3>
+            <ui-text-field class="input" v-model="form.userAnswer" v-if="form.type === 'aq'" />
+            <div v-if="form.type === 'fill'">
+                <span v-for="(content, index) in form._content">
                     <ui-text-field class="fill-input"
                                    :style="{width: (content.length * 40) + 'px'}"
-                                   v-model="question['fill' + content.index]"
+                                   v-model="form['fill' + content.index]"
                                    v-if="content.type === 'blank'" />
                     <!--<input/>-->
                     <span v-else>{{ content.text }}</span>
                 </span>
             </div>
-            <ul class="options" v-if="question.type === 'judgment'">
+            <ul class="options" v-if="form.type === 'judgment'">
                 <li class="item"
-                    :class="{selected: isSelected(question, true)}"
+                    :class="{selected: isSelected(form, true)}"
                     @click="doOption(true)">正确</li>
                 <li class="item"
-                    :class="{selected: isSelected(question, false)}"
+                    :class="{selected: isSelected(form, false)}"
                     @click="doOption(false)">错误</li>
             </ul>
             <ul class="options">
-                <li class="item" v-for="(option, index) in question.options"
+                <li class="item" v-for="(option, index) in form.options"
                     :key="option"
-                    :class="{selected: isSelected(question, index)}"
+                    :class="{selected: isSelected(form, index)}"
                     @click="doOption(index)">{{ option }}</li>
             </ul>
             <div class="op">
-                <ui-raised-button class="btn" label="上一题" @click="prevQuestion" :disabled="questionIndex === 0" />
-                <ui-raised-button class="btn" label="下一题" primary @click="nextQuestion" :disabled="questionIndex === questions.length - 1" />
+                <ui-raised-button class="btn" label="上一题" @click="prevForm" :disabled="formIndex === 0" />
+                <ui-raised-button class="btn" label="下一题" primary @click="nextForm" :disabled="formIndex === forms.length - 1" />
                 <!--<ui-raised-button class="btn" label="查看答案" @click="viewAnswer" :disabled="false" />-->
                 <ui-raised-button class="btn" label="交卷" @click="viewAnswer" :disabled="false" />
             </div>
@@ -63,7 +63,7 @@
             <ul class="answer-list">
                 <li class="item"
                     :class="{success: isSuccess(q)}"
-                    v-for="(q, index) in questions">
+                    v-for="(q, index) in forms">
                     <h3 v-if="q.type !== 'fill'">问题：{{ q.content }}</h3>
                     <h3 v-if="q.type === 'fill'">问题：{{ getFillContent(q.content) }}</h3>
                     <h3 v-if="q.type === 'single'">答案：{{ numberToLetter(q.answer) }}. {{ q.options[q.answer] }}</h3>
@@ -153,8 +153,8 @@
     export default {
         data () {
             return {
-                questionIndex: 0,
-                questions: [
+                formIndex: 0,
+                forms: [
 //                    {
 //                        id: '1',
 //                        type: 'join',
@@ -164,6 +164,13 @@
 //                        answer: [[0, 1], [1, 3], [2, 0], [4, 2]],
 //                        userAnswer: null
 //                    },
+                    {
+                        id: '1',
+                        type: 'judgment',
+                        content: '所有的苹果都是水果',
+                        answer: true,
+                        userAnswer: null
+                    },
                     {
                         id: '1',
                         type: 'judgment',
@@ -202,7 +209,7 @@
                         userAnswer: null
                     }
                 ],
-                question: {},
+                form: {},
                 state: '', // 'start', 'end',
                 startTime: null,
                 endTime: null,
@@ -220,25 +227,25 @@
                     join: '连线题',
                     code: '编程题' // Attachment
                 }
-                return types[this.question.type]
+                return types[this.form.type]
             },
             score() {
                 let successCount = 0
-                for (let question of this.questions) {
-                    if (question.type !== 'fill' && !question.userAnswer) {
+                for (let form of this.forms) {
+                    if (form.type !== 'fill' && !form.userAnswer) {
                         continue
                     }
-                    if (question.type === 'single' || question.type === 'aq') {
-                        if (question.userAnswer === question.answer) {
+                    if (form.type === 'single' || form.type === 'aq') {
+                        if (form.userAnswer === form.answer) {
                             successCount++
                         }
-                    } else if (question.type === 'multiple') {
-                        if (question.answer.length !== question.userAnswer.length) {
+                    } else if (form.type === 'multiple') {
+                        if (form.answer.length !== form.userAnswer.length) {
                             continue
                         }
                         let isRight = true
-                        for (let i = 0; i < question.answer.length; i++) {
-                            if (question.answer[i] !== question.userAnswer[i]) {
+                        for (let i = 0; i < form.answer.length; i++) {
+                            if (form.answer[i] !== form.userAnswer[i]) {
                                 isRight = false
                                 break
                             }
@@ -246,18 +253,18 @@
                         if (isRight) {
                             successCount++
                         }
-                    } else if (question.type === 'fill') {
-                        if (this.isSuccess(question)) {
+                    } else if (form.type === 'fill') {
+                        if (this.isSuccess(form)) {
                             successCount++
                         }
-                        console.log('判断', this.isSuccess(question))
-                    } else if (question.type === 'judgment') {
-                        if (question.userAnswer === question.answer) {
+                        console.log('判断', this.isSuccess(form))
+                    } else if (form.type === 'judgment') {
+                        if (form.userAnswer === form.answer) {
                             successCount++
                         }
                     }
                 }
-                return parseInt(100 * successCount / this.questions.length)
+                return parseInt(100 * successCount / this.forms.length)
             },
             startTimeStr() {
                 return format(new Date(this.startTime), 'hh:mm')
@@ -268,9 +275,9 @@
             if (id === '1') {
             } else {
                 this.exam = this.$storage.get('exam-' + id)
-                this.questions = this.exam.questions
+                this.forms = this.exam.forms
             }
-            this.question = this.questions[this.questionIndex]
+            this.form = this.forms[this.formIndex]
             this.init()
             // 测试
             this.start()
@@ -280,9 +287,9 @@
         },
         methods: {
             init() {
-                for (let question of this.questions) {
-                    if (question.type === 'fill') {
-                        let content = question.content.replace(new RegExp(FILL, 'g'), '|?|' + FILL + '|?|')
+                for (let form of this.forms) {
+                    if (form.type === 'fill') {
+                        let content = form.content.replace(new RegExp(FILL, 'g'), '|?|' + FILL + '|?|')
                         let arr = content.split('|?|')
                         let result = []
                         let blankIndex = 0
@@ -291,7 +298,7 @@
                                 result.push({
                                     type: 'blank',
                                     index: blankIndex,
-                                    length: question.answer[blankIndex].length
+                                    length: form.answer[blankIndex].length
                                 })
                                 blankIndex++
                             } else {
@@ -301,7 +308,7 @@
                                 })
                             }
                         }
-                        question._content = result
+                        form._content = result
                     }
                 }
             },
@@ -311,89 +318,91 @@
             getFillContent(content) {
                 return content.replace(new RegExp(FILL, 'g'), '___')
             },
-            getFillUserAnswer(question) {
+            getFillUserAnswer(form) {
                 let answer = []
-                for (let i = 0; i < question.answer.length; i++) {
-                    if (question['fill' + i]) {
-                        answer.push(question['fill' + i])
+                for (let i = 0; i < form.answer.length; i++) {
+                    if (form['fill' + i]) {
+                        answer.push(form['fill' + i])
                     } else {
                         answer.push(null)
                     }
                 }
                 return answer // .join(', ')
             },
-            isSelected(question, index) {
-                if (question.type === 'single') {
-                    return question.userAnswer === index
-                } else if (question.type === 'multiple') {
-                    if (!question.userAnswer) {
+            isSelected(form, index) {
+                if (form.type === 'single') {
+                    return form.userAnswer === index
+                } else if (form.type === 'multiple') {
+                    if (!form.userAnswer) {
                         return false
                     }
-                    for (let answer of question.userAnswer) {
+                    for (let answer of form.userAnswer) {
                         if (answer === index) {
                             return true
                         }
                     }
                     return false
-                } else if (question.type === 'judgment') {
-                    return question.userAnswer === index
+                } else if (form.type === 'judgment') {
+                    return form.userAnswer === index
                 }
                 return false
             },
-            isSuccess(question) {
+            isSuccess(form) {
                 console.log('判断')
-                if (question.type === 'single') {
-                    console.log('单选题' + question.userAnswer === question.answer)
-                    return question.userAnswer === question.answer
+                if (form.type === 'judgment') {
+                    console.log('呵呵')
+                    console.log(form.userAnswer, form.answer)
+                    console.log(form.userAnswer === form.answer)
+                    return form.userAnswer === form.answer
                 }
-                if (question.type !== 'fill' && !question.userAnswer) {
+                if (form.type === 'single') {
+                    console.log('单选题' + form.userAnswer === form.answer)
+                    return form.userAnswer === form.answer
+                }
+                if (form.type !== 'fill' && !form.userAnswer) {
                     return false
                 }
-
-                if (question.type === 'multiple') {
+                if (form.type === 'multiple') {
                     // 少选多选不给分
-                    if (question.answer.length !== question.userAnswer.length) {
+                    if (form.answer.length !== form.userAnswer.length) {
                         return false
                     }
-                    for (let i = 0; i < question.answer.length; i++) {
-                        if (question.answer[i] !== question.userAnswer[i]) {
+                    for (let i = 0; i < form.answer.length; i++) {
+                        if (form.answer[i] !== form.userAnswer[i]) {
                             return false
                         }
                     }
                     return true
                 }
-                if (question.type === 'aq') {
-                    return question.userAnswer === question.answer
+                if (form.type === 'aq') {
+                    return form.userAnswer === form.answer
                 }
-                if (question.type === 'fill') {
-                    let userAnswer = this.getFillUserAnswer(question)
-                    if (question.answer.length !== userAnswer.length) {
+                if (form.type === 'fill') {
+                    let userAnswer = this.getFillUserAnswer(form)
+                    if (form.answer.length !== userAnswer.length) {
                         return false
                     }
-                    for (let i = 0; i < question.answer.length; i++) {
-                        if (question.answer[i] !== userAnswer[i]) {
+                    for (let i = 0; i < form.answer.length; i++) {
+                        if (form.answer[i] !== userAnswer[i]) {
                             return false
                         }
                     }
                     return true
-                }
-                if (question.type === 'judgment') {
-                    return question.userAnswer === question.answer
                 }
                 return false
             },
-            isDone(question) {
-                if (question.type === 'single') {
-                    return question.userAnswer || question.userAnswer === 0
+            isDone(form) {
+                if (form.type === 'single') {
+                    return form.userAnswer || form.userAnswer === 0
                 }
-                if (question.type === 'multiple') {
-                    return question.userAnswer && question.userAnswer.length
+                if (form.type === 'multiple') {
+                    return form.userAnswer && form.userAnswer.length
                 }
-                if (question.type === 'aq') {
-                    return question.userAnswer
+                if (form.type === 'aq') {
+                    return form.userAnswer
                 }
-                if (question.type === 'fill') {
-                    let answer = this.getFillUserAnswer(question)
+                if (form.type === 'fill') {
+                    let answer = this.getFillUserAnswer(form)
                     for (let item of answer) {
                         if (!item) {
                             return false
@@ -401,38 +410,38 @@
                     }
                     return true
                 }
-                if (question.type === 'judgment') {
-                    return question.userAnswer === true || question.userAnswer === false
+                if (form.type === 'judgment') {
+                    return form.userAnswer === true || form.userAnswer === false
                 }
                 return false
             },
             doOption(index) {
-                if (this.question.type === 'single') {
-                    this.questions[this.questionIndex].userAnswer = index
+                if (this.form.type === 'single') {
+                    this.forms[this.formIndex].userAnswer = index
 //                    // 检查后面是否有未完成的题目
-//                    for (let i = this.questionIndex + 1; i < this.questions.length; i++) {
-//                        if (!this.questions[i].userAnswer) {
-//                            this.questionIndex = i
-//                            this.question = this.questions[this.questionIndex]
+//                    for (let i = this.formIndex + 1; i < this.forms.length; i++) {
+//                        if (!this.forms[i].userAnswer) {
+//                            this.formIndex = i
+//                            this.form = this.forms[this.formIndex]
 //                            return
 //                        }
 //                    }
 //                    // 检查前面是否有未完成的题目
-//                    for (let i = 0; i < this.questionIndex; i++) {
-//                        if (!this.questions[i].userAnswer) {
-//                            this.questionIndex = i
-//                            this.question = this.questions[this.questionIndex]
+//                    for (let i = 0; i < this.formIndex; i++) {
+//                        if (!this.forms[i].userAnswer) {
+//                            this.formIndex = i
+//                            this.form = this.forms[this.formIndex]
 //                            return
 //                        }
 //                    }
 //                    // 遮住某个 bug
-//                    this.questionIndex++
-//                    if (this.questionIndex > this.questions.length - 1) {
-//                        this.questionIndex = 0
+//                    this.formIndex++
+//                    if (this.formIndex > this.forms.length - 1) {
+//                        this.formIndex = 0
 //                    }
-//                    this.question = this.questions[this.questionIndex]
-                } else if (this.question.type === 'multiple') {
-                    let userAnswer = this.questions[this.questionIndex].userAnswer
+//                    this.form = this.forms[this.formIndex]
+                } else if (this.form.type === 'multiple') {
+                    let userAnswer = this.forms[this.formIndex].userAnswer
                     if (!userAnswer) {
                         userAnswer = []
                     }
@@ -448,22 +457,22 @@
                     userAnswer.push(index)
                     // 答案排序
                     userAnswer = userAnswer.sort()
-                    this.questions[this.questionIndex].userAnswer = userAnswer
-                } else if (this.question.type === 'judgment') {
-                    this.questions[this.questionIndex].userAnswer = index
+                    this.forms[this.formIndex].userAnswer = userAnswer
+                } else if (this.form.type === 'judgment') {
+                    this.forms[this.formIndex].userAnswer = index
                 }
             },
-            prevQuestion() {
-                this.questionIndex--
-                this.question = this.questions[this.questionIndex]
+            prevForm() {
+                this.formIndex--
+                this.form = this.forms[this.formIndex]
             },
             selectIndex(index) {
-                this.questionIndex = index
-                this.question = this.questions[this.questionIndex]
+                this.formIndex = index
+                this.form = this.forms[this.formIndex]
             },
-            nextQuestion() {
-                this.questionIndex++
-                this.question = this.questions[this.questionIndex]
+            nextForm() {
+                this.formIndex++
+                this.form = this.forms[this.formIndex]
             },
             start() {
                 this.state = 'start'
@@ -476,10 +485,10 @@
             },
             restart() {
                 // 清空回答
-                for (let question of this.questions) {
-                    question.userAnswer = null
+                for (let form of this.forms) {
+                    form.userAnswer = null
                 }
-                this.questionIndex = 0
+                this.formIndex = 0
                 this.start()
             },
             viewAnswer() {

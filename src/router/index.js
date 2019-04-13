@@ -5,11 +5,12 @@ import NProgress from 'nprogress'
 const Home = resolve => require(['@/views/Home'], resolve)
 const About = resolve => require(['@/views/About'], resolve)
 const Html = resolve => require(['@/views/Html'], resolve)
-const Exam = resolve => require(['@/views/Exam'], resolve)
-const ExamDetail = resolve => require(['@/views/ExamDetail'], resolve)
-const ExamEdit = resolve => require(['@/views/ExamAdd'], resolve)
-const ExamAdd = resolve => require(['@/views/ExamAdd'], resolve)
+const Form = resolve => require(['@/views/Form'], resolve)
+const FormDetail = resolve => require(['@/views/FormDetail'], resolve)
+const FormEdit = resolve => require(['@/views/FormEdit'], resolve)
+const FormAdd = resolve => require(['@/views/FormEdit'], resolve)
 const Question = resolve => require(['@/views/Question'], resolve)
+const Know = resolve => require(['@/views/Know'], resolve)
 const Error404 = resolve => require(['@/views/error/Error404'], resolve)
 
 Vue.use(Router)
@@ -32,20 +33,24 @@ let routes = [
         component: Question
     },
     {
-        path: '/exam/add',
-        component: ExamAdd
+        path: '/form/add',
+        component: FormAdd
     },
     {
-        path: '/exams/:id',
-        component: ExamDetail
+        path: '/forms/:id',
+        component: FormDetail
     },
     {
-        path: '/exams/:id/edit',
-        component: ExamEdit
+        path: '/forms/:id/edit',
+        component: FormEdit
     },
     {
-        path: '/exams',
-        component: Exam
+        path: '/forms',
+        component: Form
+    },
+    {
+        path: '/know',
+        component: Know
     },
     {
         path: '*',
